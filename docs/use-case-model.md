@@ -137,7 +137,7 @@
 | **Actor** | Player (via UC-05) |
 | **Preconditions** | A piece is being dropped on a square occupied by an opponent's piece. |
 | **Postconditions** | The opponent's piece is captured and removed. The capturing piece occupies the square. Point advantage is updated. |
-| **Main Flow** | 1. The player drops their piece on a square containing an opponent's piece (extends UC-05). 2. The system removes the opponent's piece from the board. 3. The system adds the captured piece to the capturing player's captured list. 4. The system recalculates and updates the point advantage display. 5. Normal post-move processing continues (clock, turn switch, board flip). |
+| **Main Flow** | 1. The player drops their piece on a valid square containing an opponent's piece (extends UC-05). 2. The system removes the opponent's piece from the board. 3. The system adds the captured piece to the capturing player's captured list. 4. The system recalculates and updates the point advantage display. 5. Normal post-move processing continues (clock, turn switch, board flip). |
 
 ---
 
@@ -154,13 +154,13 @@
 
 | Field | Description |
 |-------|-------------|
-| **Main Flow** | 1. The player picks up their King. 2. Legal moves include castling squares (two squares toward a Rook) if all conditions are met. 3. The player drops the King on the castling square. 4. The system moves the King two squares toward the Rook. 5. The system automatically moves the Rook to the other side of the King. |
+| **Main Flow** | 1. The player picks up their King. 2. Legal moves include castling squares (two squares toward a kingside Rook) if all conditions are met. 3. The player drops the King on the castling square. 4. The system moves the King two squares toward the Rook. 5. The system automatically moves the Rook to the other side of the King. |
 
 #### UC-07b: En Passant
 
 | Field | Description |
 |-------|-------------|
-| **Main Flow** | 1. The opponent just moved a pawn two squares forward, landing beside the player's pawn. 2. The player picks up their pawn. 3. The en passant capture square is shown as a legal move. 4. The player drops the pawn on the en passant square. 5. The system moves the pawn diagonally and removes the opponent's pawn from its square. |
+| **Main Flow** | 1. The opponent has performed a starting pawn move of two squares forward and lands next to the player's pawn 2. The player picks up their pawn. 3. The en passant capture square is shown as a legal move. 4. The player drops the pawn on the en passant square. 5. The system places the pawn diagonally behind the opponent's pawn and removes the opponent's pawn from its square. |
 
 ---
 

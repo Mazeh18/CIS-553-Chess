@@ -55,12 +55,12 @@ A desktop chess application built in Python with a graphical user interface. The
 ## FR-07: Piece Movement Rules
 
 - **FR-07.1**: The system shall enforce legal movement rules for each piece type:
-  - **Pawn**: One square forward, two squares forward from the starting rank, diagonal capture.
-  - **Rook**: Any number of squares horizontally or vertically.
-  - **Bishop**: Any number of squares diagonally.
-  - **Queen**: Any number of squares horizontally, vertically, or diagonally.
-  - **King**: One square in any direction.
-  - **Knight**: L-shaped move (two squares + one square perpendicular). May jump over pieces.
+  - **FR-07.1.1**: **Pawn** - One square forward, two squares forward from the starting rank, diagonal capture.
+  - **FR-07.1.2**: **Rook** - Any number of squares horizontally or vertically.
+  - **FR-07.1.3**: **Bishop** - Any number of squares diagonally.
+  - **FR-07.1.4**: **Queen** - Any number of squares horizontally, vertically, or diagonally.
+  - **FR-07.1.5**: **King** - One square in any direction.
+  - **FR-07.1.6**: **Knight** - L-shaped move (two squares + one square perpendicular). May jump over pieces.
 - **FR-07.2**: The system shall prevent pieces (except Knights) from moving through occupied squares.
 - **FR-07.3**: The system shall prevent moves that leave the current player's King in check.
 
@@ -74,19 +74,19 @@ A desktop chess application built in Python with a graphical user interface. The
 ## FR-09: Special Moves
 
 - **FR-09.1 Castling**: The system shall allow castling (kingside and queenside) when:
-  - Neither the King nor the involved Rook has previously moved.
-  - No pieces are between the King and the Rook.
-  - The King is not in check.
-  - The King does not pass through or land on a square under attack.
-  - Castling is executed by dragging the King two squares toward the Rook; the Rook moves automatically.
+  - **FR-09.1.1**: Neither the King nor the involved Rook has previously moved.
+  - **FR-09.1.2**: No pieces are between the King and the Rook.
+  - **FR-09.1.3**: The King is not in check.
+  - **FR-09.1.4**: The King does not pass through or land on a square under attack.
+  - **FR-09.1.5**: Castling is executed by placing the king next to the kingside rook (The rook in h1 for white, and the rook in h8 for black). The rook will automatically move to the other side of the king.
 - **FR-09.2 En Passant**: The system shall allow en passant capture when:
-  - The opponent's pawn just advanced two squares from its starting rank.
-  - The capturing pawn is on its 5th rank and adjacent to the opponent's pawn.
-  - The capture occurs on the immediately following turn.
+  - **FR-09.2.1**: The opponent's pawn just advanced two squares from its starting rank.
+  - **FR-09.2.2**: The capturing pawn is on its 5th rank and adjacent to the opponent's pawn.
+  - **FR-09.2.3**: The capture occurs on the immediately following turn.
 - **FR-09.3 Pawn Promotion**: When a pawn reaches the opponent's back rank:
-  - The system shall display a popup dialog with promotion options: Queen, Rook, Bishop, Knight.
-  - The game shall pause until the player selects a piece.
-  - The pawn shall be replaced by the selected piece.
+  - **FR-09.3.1**: The system shall display a popup dialog with promotion options: Queen, Rook, Bishop, Knight.
+  - **FR-09.3.2**: The game shall pause until the player selects a piece.
+  - **FR-09.3.3**: The pawn shall be replaced by the selected piece.
 
 ## FR-10: Check, Checkmate, and Stalemate
 
@@ -97,7 +97,7 @@ A desktop chess application built in Python with a graphical user interface. The
 
 ## FR-11: Draw Conditions
 
-- **FR-11.1**: The system shall detect a draw by **stalemate** (no legal moves, not in check).
+- **FR-11.1**: The system shall detect a draw by Stalemate (the opposing king has no legal moves and is not in check).
 - **FR-11.2**: The system shall detect a draw by **insufficient material** (e.g., K vs K, K+B vs K, K+N vs K).
 - **FR-11.3**: The system shall detect a draw by **threefold repetition** (same position three times, same player to move).
 - **FR-11.4**: The system shall detect a draw by the **fifty-move rule** (50 consecutive moves without a pawn move or capture).
@@ -105,9 +105,9 @@ A desktop chess application built in Python with a graphical user interface. The
 ## FR-12: Time Controls
 
 - **FR-12.1**: When a time control is active, each player's clock shall count down during their turn.
-- **FR-12.2**: After a player completes a move, their clock shall receive the increment (if any).
+- **FR-12.2**: The system shall add the increment (if any) remaining to the player's clock once they complete their turn..
 - **FR-12.3**: If a player's clock reaches 0:00, that player loses the game on time.
-- **FR-12.4**: Both clocks shall be displayed on screen at all times.
+- **FR-12.4**: Both clocks shall be displayed on screen at all times with color indication of which time belongs to which player (white or black).
 - **FR-12.5**: When "No Time" is selected, no clocks shall be displayed or enforced.
 
 ## FR-13: Turn Management

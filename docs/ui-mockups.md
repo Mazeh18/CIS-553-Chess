@@ -76,7 +76,7 @@ Displayed after clicking "Play" on the start menu.
 |   +----------+  +----------+  +----------+    |
 |                                                |
 |   +----------+  +----------+  +----------+    |
-|   | Rapid    |  | No Time  |  | Custom   |    |
+|   | Classic  |  | No Time  |  | Custom   |    |
 |   | 30 + 20  |  |   --     |  |  ...     |    |
 |   +----------+  +----------+  +----------+    |
 |                                                |
