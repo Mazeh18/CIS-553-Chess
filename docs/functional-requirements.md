@@ -106,7 +106,7 @@ A desktop chess application built in Python with a graphical user interface. The
 
 - **FR-12.1**: When a time control is active, each player's clock shall count down during their turn.
 - **FR-12.2**: The system shall add the increment (if any) remaining to the player's clock once they complete their turn..
-- **FR-12.3**: If a player's clock reaches 0:00, that player loses the game on time.
+- **FR-12.3**: If a player's clock reaches 0:00, that player shall lose the game on time.
 - **FR-12.4**: Both clocks shall be displayed on screen at all times with color indication of which time belongs to which player (white or black).
 - **FR-12.5**: When "No Time" is selected, no clocks shall be displayed or enforced.
 
@@ -124,7 +124,7 @@ A desktop chess application built in Python with a graphical user interface. The
 
 - **FR-15.1**: The system shall provide an **Undo** button that reverses the last move and restores the previous board state (including timers, castling rights, en passant status).
 - **FR-15.2**: The system shall provide a **Resign** button. Clicking it ends the game with a loss for the resigning player.
-- **FR-15.3**: The system shall provide a **New Game** button that returns the player to the time control selection screen.
+- **FR-15.3**: The system shall provide a **New Game** button that returns the players to the time control selection screen.
 
 ## FR-16: Game Over
 
