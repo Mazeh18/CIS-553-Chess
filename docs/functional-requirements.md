@@ -27,7 +27,7 @@ A desktop chess application built in Python with a graphical user interface. The
   | Bullet | 2 | 1 |
   | Blitz | 5 | 0 |
   | Rapid | 10 | 5 |
-  | Rapid | 30 | 20 |
+  | Classic | 30 | 20 |
   | No Time | -- | -- |
 - **FR-03.3**: The system shall offer a **Custom** option allowing the player to specify a custom time (in minutes) and increment (in seconds).
 - **FR-03.4**: Selecting a time control option (or confirming a custom one) shall start a new game with that time setting.
