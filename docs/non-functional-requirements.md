@@ -3,7 +3,7 @@
 ## NFR-01: Performance
 
 - **NFR-01.1**: The system shall respond to user input (drag initiation, piece drop, button clicks) within 200 milliseconds.
-- **NFR-01.2**: The application shall launch and display the start menu within 3 seconds on standard hardware.
+- **NFR-01.2**: The application shall launch and display the start menu within 3 seconds.
 - **NFR-01.3**: Move validation and board state updates shall complete within 100 milliseconds.
 - **NFR-01.4**: The dragged piece shall track the mouse cursor at the application's frame rate with no perceptible lag.
 - **NFR-01.5**: Player clocks shall update with at least 100ms precision and display with 1-second granularity (or 0.1-second when under 10 seconds).
