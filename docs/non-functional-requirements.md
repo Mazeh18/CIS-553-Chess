@@ -15,9 +15,8 @@
 - **NFR-02.3**: The board shall use a standard color scheme with alternating light and dark squares.
 - **NFR-02.4**: Legal move highlights shall be clearly visible while dragging a piece.
 - **NFR-02.5**: The current game state (turn, clocks, check status, captured pieces, point advantage) shall be visible at all times during a game.
-- **NFR-02.6**: The board flip between turns shall be immediate and not disorienting.
-- **NFR-02.7**: All menu screens (start menu, credits, time selection) shall be navigable with clear button labels. In this instance, clear is defined as:
-    - **NFR-02.7.1**: A button containing text in legible font and color that states the buttons action
+- **NFR-02.6**: All menu screens (start menu, credits, time selection) shall be navigable with clear button labels. In this instance, clear is defined as:
+    - **NFR-02.6.1**: A button containing text in legible font and color that states the buttons action
 
 
 ## NFR-03: Reliability
