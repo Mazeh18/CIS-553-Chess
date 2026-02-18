@@ -105,9 +105,9 @@ ________________            ____________
 ______________________           _____________       ________________________         ______________        ____________________________
 |custom time Screem  |           |update time |      |update increment time |         |Start game |         |back to time select menu |        
 _____________________            ____________        ________________________         ______________        ____________________________
-         | iput custom time(mins)   | send info to setting     |                           |                           |  
+         | input custom time(mins)  | send info to setting     |                           |                           |  
          |------------------------> | -------------------------|----------------------->   |                           |  
-         | iput custom increment time time(mins)               |   send info to settings   |                           |  
+         | input custom increment time time(mins)              |   send info to settings   |                           |  
          |-------------------------------------------------->  |------------------------>  |                           |  
          | start button                                                                    |                           |  
          |-------------------------------------------------------------------------------->|                           |  
