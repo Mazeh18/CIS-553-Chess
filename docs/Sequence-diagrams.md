@@ -103,7 +103,7 @@ ________________            ____________
 ### UC-13: Set Custom Settings for time control
 ```
 ______________________           _____________       ________________________         ______________        ____________________________
-|custom time Screem  |           |update time |      |update increment time |         |Start game |         |back to tiem select menu |        
+|custom time Screem  |           |update time |      |update increment time |         |Start game |         |back to time select menu |        
 _____________________            ____________        ________________________         ______________        ____________________________
          | iput custom time(mins)   |                          |                           |                           |  
          |------------------------> |                          |                           |                           |  
