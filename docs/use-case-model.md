@@ -216,8 +216,15 @@
 |-------|-------------|
 | **Name** | close the game |
 | **Actor** | Player |
-| **Preconditions** | The player is title screen |
+| **Preconditions** | The player is on title screen |
 | **Postconditions** | the game is closed |
 | **Main Flow** | 1. The player clicks the exit game button. 2. The game closes itself down
 
 ### UC-13: Set Custom Settings for time control
+| Field | Description |
+|-------|-------------|
+| **Name** | Set Custom time Control |
+| **Actor** | Player |
+| **Preconditions** | The player is on Custom time screen |
+| **Postconditions** | the game starts with the custom time|
+| **Main Flow** | 1. The player inputs the total time in minuts. 2.  The player inputs the total time increment in seconds. 3. player hits the start button 4. game validates inputs to make sure they are valid or sets default max or minimum values
