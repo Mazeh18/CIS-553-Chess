@@ -210,7 +210,7 @@
 | **Preconditions** | The player is on the game screen (during or after a game). |
 | **Postconditions** | The player is returned to the time control selection screen. |
 | **Main Flow** | 1. The player clicks the New Game button. 2. The system navigates to the time control selection screen (UC-03). 3. The player selects a time control and a fresh game begins. |
-
+---
 ### UC-12: Exit Game
 | Field | Description |
 |-------|-------------|
@@ -219,7 +219,7 @@
 | **Preconditions** | The player is on title screen |
 | **Postconditions** | the game is closed |
 | **Main Flow** | 1. The player clicks the exit game button. 2. The game closes itself down
-
+---
 ### UC-13: Set Custom Settings for time control
 | Field | Description |
 |-------|-------------|
