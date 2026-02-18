@@ -52,7 +52,6 @@ ______________________             ________________               ______________
 #### UC-07b: En Passant
 
 ### UC-08: Promote Pawn
-### UC-03: Select Time Control
 ```
 ______________________             ___________________              ____________________         _____________________        _____________________       
 |Time Control Screem  |           |pawn becomes queen|              |pawn becomes rook|          |pawn becomes Bishop|       |pawn becomes Knight| 
