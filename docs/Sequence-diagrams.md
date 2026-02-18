@@ -44,11 +44,11 @@ ______________________             ________________               ______________
 ### UC-05: Move Piece (Drag and Drop)
 log move, pick up peice, highlight possible moves, player clicks or drages to possible move
 ```
-__________________           ________________            ___________________          __________________ 
-|chessboardscreen|           |select peice|              |highlighted state|          |piece has moved| 
-_________________            ________________            ___________________          __________________ 
-         | click on a peice        |  highlight possible moves  | click on highlighted spot   |
-         |------------------------>| ------------------------>  |---------------------------> |
+__________________           ________________            ___________________          __________________        _____________
+|chessboardscreen|           |select peice|              |highlighted state|          |piece has moved|          |move saved| 
+_________________            ________________            ___________________          __________________        _____________
+         | click on a peice        |  highlight possible moves  | click on highlighted spot   | save move to history   |
+         |------------------------>| ------------------------>  |---------------------------> |----------------------> |
 ```
 
 ### UC-06: Capture Piece
