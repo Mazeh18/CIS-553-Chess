@@ -219,3 +219,5 @@
 | **Preconditions** | The player is title screen |
 | **Postconditions** | the game is closed |
 | **Main Flow** | 1. The player clicks the exit game button. 2. The game closes itself down
+
+### UC-13: Set Custom Settings for time control
