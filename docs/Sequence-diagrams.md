@@ -61,5 +61,5 @@ ______________________             ________________               ______________
 
 ### UC-12: Exit Game
 
-### UC-13: Set Custom Settings
+### UC-13: Set Custom Settings for time control
 
