@@ -60,6 +60,13 @@ ______________________             ________________               ______________
 ### UC-11: Start New Game
 
 ### UC-12: Exit Game
+```
+________________           _____________
+|Title Screem  |           |game closes|       
+________________            ____________
+         | hit Exit game button |  
+         |--------------------> | 
+```
 
 ### UC-13: Set Custom Settings for time control
 
