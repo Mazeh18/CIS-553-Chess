@@ -106,7 +106,7 @@ Displayed after clicking "Play" on the start menu.
 
 ## Screen 4: Main Game Screen
 
-The primary game interface. Layout shown from White's perspective (before first flip).
+The primary game interface. Layout shown from White's perspective.
 
 ```
 +------------------------------------------------------------------------+
@@ -151,29 +151,6 @@ The primary game interface. Layout shown from White's perspective (before first 
 | Move History | Center-right | Scrollable panel of moves in algebraic notation (move number, white, black). |
 | Current Player Info | Bottom-above-status | Current player's name/color, their clock, their captured pieces and point advantage. |
 | Status / Actions | Bottom | Turn indicator and action buttons (Undo, Resign, New Game). |
-
-### Board Flip Behavior
-
-After White makes a move, the board flips so Black's pieces are at the bottom:
-
-```
-|     h    g    f    e    d    c    b    a      |
-|   +----+----+----+----+----+----+----+----+  |
-| 1 | wR | wN | wB | wK | wQ | wB | wN | wR | |
-|   +----+----+----+----+----+----+----+----+  |
-| 2 | wP | wP | wP | wP | wP | wP | wP | wP | |
-|   +----+----+----+----+----+----+----+----+  |
-|   ...                                        |
-| 7 | bP | bP | bP | bP | bP | bP | bP | bP | |
-|   +----+----+----+----+----+----+----+----+  |
-| 8 | bR | bN | bB | bQ | bK | bB | bN | bR | |
-|   +----+----+----+----+----+----+----+----+  |
-|     h    g    f    e    d    c    b    a      |
-```
-
-The current player's info and clock is always at the bottom. The opponent's info is always at the top.
-
----
 
 ## Screen 5: Drag and Drop Interaction
 

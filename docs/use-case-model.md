@@ -96,7 +96,7 @@
 | **Actor** | Player |
 | **Preconditions** | The start menu is displayed. |
 | **Postconditions** | A time control is selected and the game begins. |
-| **Main Flow** | 1. The player clicks the Play button on the start menu. 2. The system displays the time control selection screen with preset options: Bullet (2+1), Blitz (5+0), Rapid (10+5), Rapid (30+20), No Time, and Custom. 3. The player clicks one of the preset options. 4. The system starts a new game with the selected time control. |
+| **Main Flow** | 1. The player clicks the Play button on the start menu. 2. The system displays the time control selection screen with preset options: Bullet (2+1), Blitz (5+0), Classic (10+5), Rapid (30+20), No Time, and Custom. 3. The player clicks one of the preset options. 4. The system starts a new game with the selected time control. |
 | **Alternate Flow A** | The player selects Custom: 1. The system displays input fields for time (minutes) and increment (seconds). 2. The player enters values and clicks Start. 3. The system validates the input and starts the game. |
 | **Alternate Flow B** | The player clicks Back to return to the start menu. |
 
@@ -110,7 +110,7 @@
 | **Actor** | Player |
 | **Preconditions** | A time control has been selected. |
 | **Postconditions** | The game is active with the board displayed, clocks running (if applicable), and White to move. |
-| **Main Flow** | 1. The system displays the game screen: board (White's perspective), clocks, empty move history, empty captured pieces, and action buttons. 2. White's clock starts (if time control is active). 3. The players alternate turns by dragging and dropping pieces. 4. After each move: the board flips, the turn switches, the move is recorded, clocks update, and captured pieces / point advantage update. 5. The game continues until checkmate, stalemate, draw, resignation, or timeout. 6. The system displays the game result. Only New Game is available as an action. |
+| **Main Flow** | 1. The system displays the game screen: board (White's perspective), clocks, empty move history, empty captured pieces, and action buttons. 2. White's clock starts (if time control is active). 3. The players alternate turns by dragging and dropping pieces. 4. After each move: the turn switches, the move is recorded, clocks update, and captured pieces / point advantage update. 5. The game continues until checkmate, stalemate, draw, resignation, or timeout. 6. The system displays the game result. Only New Game is available as an action. |
 
 ---
 
@@ -121,8 +121,8 @@
 | **Name** | Move Piece |
 | **Actor** | Player |
 | **Preconditions** | A game is active. It is the player's turn. |
-| **Postconditions** | The piece is moved to the destination. Turn switches. Board flips. Clock updates. |
-| **Main Flow** | 1. The player presses and holds the mouse button on one of their pieces. 2. The system picks up the piece: it follows the cursor, and legal destination squares are highlighted. 3. The player drags the piece to a legal destination square. 4. The player releases the mouse button. 5. The system places the piece on the destination square. 6. The system records the move in move history. 7. The system applies the increment to the moving player's clock (if applicable). 8. The system switches the turn to the other player. 9. The board flips to the new player's perspective. 10. The system checks for check, checkmate, stalemate, or draw conditions. |
+| **Postconditions** | The piece is moved to the destination. Turn switches. Clock updates. |
+| **Main Flow** | 1. The player presses and holds the mouse button on one of their pieces. 2. The system picks up the piece: it follows the cursor, and legal destination squares are highlighted. 3. The player drags the piece to a legal destination square. 4. The player releases the mouse button. 5. The system places the piece on the destination square. 6. The system records the move in move history. 7. The system applies the increment to the moving player's clock (if applicable). 8. The system switches the turn to the other player. 9. The system checks for check, checkmate, stalemate, or draw conditions. |
 | **Alternate Flow A** | The player releases the piece on an invalid square or off the board — the piece returns to its original position. No move is made. |
 | **Alternate Flow B** | The player releases on a square with an opponent's piece — triggers UC-06 (Capture). |
 | **Alternate Flow C** | The move results in pawn promotion — triggers UC-08 (Promote Pawn). |
@@ -137,7 +137,7 @@
 | **Actor** | Player (via UC-05) |
 | **Preconditions** | A piece is being dropped on a square occupied by an opponent's piece. |
 | **Postconditions** | The opponent's piece is captured and removed. The capturing piece occupies the square. Point advantage is updated. |
-| **Main Flow** | 1. The player drops their piece on a valid square containing an opponent's piece (extends UC-05). 2. The system removes the opponent's piece from the board. 3. The system adds the captured piece to the capturing player's captured list. 4. The system recalculates and updates the point advantage display. 5. Normal post-move processing continues (clock, turn switch, board flip). |
+| **Main Flow** | 1. The player drops their piece on a valid square containing an opponent's piece (extends UC-05). 2. The system removes the opponent's piece from the board. 3. The system adds the captured piece to the capturing player's captured list. 4. The system recalculates and updates the point advantage display. 5. Normal post-move processing continues (clock, turn switch). |
 
 ---
 
@@ -154,7 +154,7 @@
 
 | Field | Description |
 |-------|-------------|
-| **Main Flow** | 1. The player picks up their King. 2. Legal moves include castling squares (two squares toward a kingside Rook) if all conditions are met. 3. The player drops the King on the castling square. 4. The system moves the King two squares toward the Rook. 5. The system automatically moves the Rook to the other side of the King. |
+| **Main Flow** | 1. The player picks up their King. 2. Legal moves include castling squares if all conditions are met: kingside (placing the King next to the rook on h1/h8) or queenside (placing the King next to the rook on a1/a8). 3. The player drops the King on the castling square. 4. The system moves the King two squares toward the Rook. 5. The system automatically moves the Rook to the other side of the King. |
 
 #### UC-07b: En Passant
 
@@ -172,7 +172,7 @@
 | **Actor** | Player |
 | **Preconditions** | A pawn has been dropped on the opponent's back rank. |
 | **Postconditions** | The pawn is replaced by the selected piece. |
-| **Main Flow** | 1. A pawn move reaches the 8th rank (White) or 1st rank (Black). 2. The system pauses the game and displays the promotion popup with four options: Queen, Rook, Bishop, Knight. 3. The player clicks one of the options. 4. The system replaces the pawn on the board with the chosen piece. 5. The game resumes — turn switches, board flips, clocks update. |
+| **Main Flow** | 1. A pawn move reaches the 8th rank (White) or 1st rank (Black). 2. The system pauses the game and displays the promotion popup with four options: Queen, Rook, Bishop, Knight. 3. The player clicks one of the options. 4. The system replaces the pawn on the board with the chosen piece. 5. The game resumes — turn switches, clocks update. |
 
 ---
 
@@ -184,7 +184,7 @@
 | **Actor** | Player |
 | **Preconditions** | At least one move has been made. The game is still active. |
 | **Postconditions** | The board, clocks, and all state are restored to before the last move. |
-| **Main Flow** | 1. The player clicks the Undo button. 2. The system reverses the last move: the piece returns to its origin, any captured piece is restored, and flags (castling rights, en passant, has_moved) are reverted. 3. The system restores the clock to the time recorded before the move. 4. The last entry is removed from the move history. 5. The turn switches back. The board flips to the restored player's perspective. |
+| **Main Flow** | 1. The player clicks the Undo button. 2. The system reverses the last move: the piece returns to its origin, any captured piece is restored, and flags (castling rights, en passant, has_moved) are reverted. 3. The system restores the clock to the time recorded before the move. 4. The last entry is removed from the move history. 5. The turn switches back. |
 | **Alternate Flow** | If no moves have been made, the Undo button is disabled. |
 
 ---

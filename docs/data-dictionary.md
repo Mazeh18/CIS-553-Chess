@@ -31,7 +31,7 @@ Represents the selected time control for a game.
 | Bullet | 2 | 1 |
 | Blitz | 5 | 0 |
 | Rapid (10+5) | 10 | 5 |
-| Rapid (30+20) | 30 | 20 |
+| Classic (30+20) | 30 | 20 |
 | No Time | None | 0 |
 | Custom | (user-defined) | (user-defined) |
 
@@ -49,7 +49,6 @@ Represents the 8x8 game board.
 | halfmove_clock | int | Counter for the fifty-move rule. Incremented after each move; reset to 0 after a pawn move or capture. |
 | fullmove_number | int | The current full move number. Starts at 1, increments after Black's move. |
 | position_history | list of str | Board position hashes for threefold repetition detection. |
-| is_flipped | bool | Whether the board is currently displayed from Black's perspective. Toggles after each move. |
 
 ---
 

@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-A desktop chess application built in Python with a graphical user interface. The game supports two human players on the same machine with drag-and-drop controls, time controls, and board flipping between turns.
+A desktop chess application built in Python with a graphical user interface. The game supports two human players on the same machine with drag-and-drop controls and time controls.
 
 ---
 
@@ -38,10 +38,9 @@ A desktop chess application built in Python with a graphical user interface. The
 - **FR-04.2**: White shall always move first.
 - **FR-04.3**: If a time control is selected (not "No Time"), each player's clock shall be initialized to the chosen time.
 
-## FR-05: Board Orientation / Flipping
+## FR-05: Board Orientation
 
-- **FR-05.1**: At the start of the game, the board shall be oriented from White's perspective (White pieces at the bottom).
-- **FR-05.2**: After each completed move, the board shall flip orientation so that the current player's pieces are at the bottom of the screen.
+- **FR-05.1**: The board shall be oriented from White's perspective (White pieces at the bottom) at all times.
 
 ## FR-06: Piece Interaction (Drag and Drop)
 
@@ -78,7 +77,8 @@ A desktop chess application built in Python with a graphical user interface. The
   - **FR-09.1.2**: No pieces are between the King and the Rook.
   - **FR-09.1.3**: The King is not in check.
   - **FR-09.1.4**: The King does not pass through or land on a square under attack.
-  - **FR-09.1.5**: Castling is executed by placing the king next to the kingside rook (The rook in h1 for white, and the rook in h8 for black). The rook will automatically move to the other side of the king.
+  - **FR-09.1.5**: Kingside castling is executed by placing the king next to the kingside rook (the rook on h1 for White, and the rook on h8 for Black). The rook will automatically move to the other side of the king.
+  - **FR-09.1.6**: Queenside castling is executed by placing the king next to the queenside rook (the rook on a1 for White, and the rook on a8 for Black). The rook will automatically move to the other side of the king.
 - **FR-09.2 En Passant**: The system shall allow en passant capture when:
   - **FR-09.2.1**: The opponent's pawn just advanced two squares from its starting rank.
   - **FR-09.2.2**: The capturing pawn is on its 5th rank and adjacent to the opponent's pawn.
