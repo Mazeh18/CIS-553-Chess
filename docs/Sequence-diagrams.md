@@ -42,8 +42,17 @@ ______________________             ________________               ______________
 ### UC-04: Play Game
 
 ### UC-05: Move Piece (Drag and Drop)
+log move, pick up peice, highlight possible moves, player clicks or drages to possible move
+```
+__________________           ________________            ___________________          __________________ 
+|chessboardscreen|           |select peice|              |highlighted state|          |piece has moved| 
+_________________            ________________            ___________________          __________________ 
+         | click on a peice        |  highlight possible moves  | click on highlighted spot   |
+         |------------------------>| ------------------------>  |---------------------------> |
+```
 
 ### UC-06: Capture Piece
+track captured peices, remove captured peice from board,
 
 ### UC-07: Perform Special Move
 
