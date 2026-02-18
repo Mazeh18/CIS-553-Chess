@@ -4,12 +4,11 @@
 ### UC-01: Launch Application
 ```
 __________           ____________             ______________
-|player  |Find EXE   |launch Exe|  game loads |title screen |
-|        |---------->|          | ----------->|             | 
-|        |           |          |             |             | 
-__________           ____________             ______________
+|player  |           |launch Exe|              |title screen |
+__________            __________               ______________
+         | Find EXE             |   game loads           |
+         |--------------------> | ---------------------> |
 ```
-
 ### UC-02: View Credits
 
 
