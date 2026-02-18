@@ -4,7 +4,7 @@
 ### UC-01: Launch Application
 ```
 __________           ____________             ______________
-|player  |Find EXE   |launch Exe|  game laods |title screen |
+|player  |Find EXE   |launch Exe|  game loads |title screen |
 |        |---------->|          | ----------->|             | 
 |        |           |          |             |             | 
 __________           ____________             ______________
