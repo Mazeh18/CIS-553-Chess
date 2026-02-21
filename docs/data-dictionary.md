@@ -24,6 +24,13 @@ Represents the selected time control for a game.
 | time_minutes | int or None | Starting time per player in minutes. `None` if no time control. |
 | increment_seconds | int | Time added to a player's clock after each move, in seconds. 0 if no increment. |
 
+### Derived Behavior
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `is_timed()` | bool | Returns `False` when `time_minutes` is `None` (i.e., "No Time" selected). |
+| `get_starting_seconds()` | float | Returns `time_minutes * 60`. Returns 0 if not timed. |
+
 ### Preset Time Controls
 
 | Name | time_minutes | increment_seconds |
@@ -130,6 +137,7 @@ Represents the overall state of the game.
 | board | Board | Reference to the Board object. |
 | clock | Clock | Reference to the Clock object. |
 | time_control | TimeControl | The time control selected for this game. |
+| captured_pieces | CapturedPieces | Reference to the CapturedPieces object (see Section 10). Tracks all captured pieces and point advantage. |
 
 ---
 
@@ -175,6 +183,8 @@ Tracks the state of a piece being dragged by the player.
 | WHITE | White player / pieces. |
 | BLACK | Black player / pieces. |
 
+**Derived Behavior**: `opposite()` — Returns `BLACK` for `WHITE` and `WHITE` for `BLACK`.
+
 ### PieceType
 | Value | Description |
 |-------|-------------|
@@ -198,6 +208,10 @@ Tracks the state of a piece being dragged by the player.
 | RESIGNED | A player has resigned; game over. |
 | TIMEOUT | A player's clock reached zero; game over. |
 
+**Derived Behavior**:
+- `is_game_over()` — Returns `True` for CHECKMATE, STALEMATE, DRAW_INSUFFICIENT_MATERIAL, DRAW_THREEFOLD_REPETITION, DRAW_FIFTY_MOVE, RESIGNED, TIMEOUT.
+- `is_draw()` — Returns `True` for STALEMATE, DRAW_INSUFFICIENT_MATERIAL, DRAW_THREEFOLD_REPETITION, DRAW_FIFTY_MOVE.
+
 ---
 
 ## 12. Move History Entry (Display)
@@ -207,3 +221,26 @@ Tracks the state of a piece being dragged by the player.
 | move_number | int | The full move number. |
 | white_move | str | Algebraic notation for White's move (e.g., "e4", "Nf3", "O-O"). |
 | black_move | str or None | Algebraic notation for Black's move, or `None` if White just moved. |
+
+---
+
+## 13. Move Result
+
+A data transfer object returned by `GameController.attempt_move()` and `GameController.attempt_promotion()` to communicate the outcome of a move attempt back to the caller.
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| success | bool | Whether the move was successfully executed. `False` if the move was illegal. |
+| is_promotion | bool | Whether the move results in a pending pawn promotion (requiring the player to choose a piece). |
+| new_status | GameStatus | The game status after the move (e.g., ACTIVE, CHECK, CHECKMATE). Only meaningful when `success` is `True`. |
+
+---
+
+## 14. Move Attempt
+
+A data transfer object created by `InputController` when a player completes a drag-and-drop action. Passed to `GameController.attempt_move()` for validation and execution.
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| start_pos | Position | The board position the piece was picked up from. |
+| end_pos | Position | The board position the piece was dropped on. |
