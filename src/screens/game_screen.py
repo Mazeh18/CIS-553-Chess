@@ -7,18 +7,11 @@ from src.components.button import Button
 from src.entities.enums import Color, PieceType
 from src.constants import (
     COLOR_BACKGROUND,
-<<<<<<< HEAD
     LIGHT_SQUARE,
     DARK_SQUARE,
     BOARD_BORDER,
     BOARD_BORDER_P,
     COLOR_TEXT,
-=======
-    COLOR_LIGHT_SQUARE,
-    COLOR_DARK_SQUARE,
-    COLOR_TEXT,
-    COLOR_LABEL,
->>>>>>> 722e78f (Add base application scaffold with main menu, credits, time control, and board screens)
     FONT_NAME,
     FONT_SIZE_SMALL,
     BUTTON_WIDTH,
@@ -30,11 +23,7 @@ from src.constants import (
 # To swap in real PNGs later, replace _draw_piece() or load images into
 # PIECE_IMAGES and blit them instead.
 
-<<<<<<< HEAD
 PIECES = {
-=======
-PIECE_LETTER = {
->>>>>>> 722e78f (Add base application scaffold with main menu, credits, time control, and board screens)
     PieceType.KING: "K",
     PieceType.QUEEN: "Q",
     PieceType.ROOK: "R",
@@ -43,17 +32,18 @@ PIECE_LETTER = {
     PieceType.PAWN: "P",
 }
 
-<<<<<<< HEAD
 PIECE_WHITE = {
+    PieceType.KING: pygame.image.load("assets/Pieces/KingWhite.png"),
+    PieceType.ROOK: pygame.image.load("assets/Pieces/RookWhite.png"),
     PieceType.PAWN: pygame.image.load("assets/Pieces/PawnWhite.png")
 }
 
 PIECE_BLACK = {
+    PieceType.KING: pygame.image.load("assets/Pieces/KingBlack.png"),
+    PieceType.ROOK: pygame.image.load("assets/Pieces/RookBlack.png"),
     PieceType.PAWN: pygame.image.load("assets/Pieces/PawnBlack.png")
 }
 
-=======
->>>>>>> 722e78f (Add base application scaffold with main menu, credits, time control, and board screens)
 COLOR_WHITE_PIECE = (255, 255, 255)
 COLOR_BLACK_PIECE = (30, 30, 30)
 COLOR_WHITE_PIECE_TEXT = (30, 30, 30)
@@ -99,9 +89,8 @@ class GameScreen(BaseScreen):
 
         screen_w, screen_h = surface.get_size()
 
-<<<<<<< HEAD
         # Board sizing: fit to ~60% of screen height, left centered
-        board_margin = 300
+        board_margin = 200
         self._square_size = (screen_h - board_margin * 2) // 8
         self._board_size = self._square_size * 8
         self._border_size = self._board_size + (BOARD_BORDER_P * 2)
@@ -111,15 +100,6 @@ class GameScreen(BaseScreen):
         
         # Position board center-left
         self._board_x = 100
-=======
-        # Board sizing: fit to ~85% of screen height, centered vertically
-        board_margin = 40
-        self._square_size = (screen_h - board_margin * 2) // 8
-        self._board_size = self._square_size * 8
-
-        # Position board center-left
-        self._board_x = (screen_w - self._board_size) // 2
->>>>>>> 722e78f (Add base application scaffold with main menu, credits, time control, and board screens)
         self._board_y = (screen_h - self._board_size) // 2
 
         # Fonts
@@ -144,7 +124,6 @@ class GameScreen(BaseScreen):
     def _render_board(self) -> pygame.Surface:
         """Draw the 8x8 board with rank/file labels onto a surface."""
         sq = self._square_size
-<<<<<<< HEAD
         playable_surf = pygame.Surface((self._board_size, self._board_size))
         border_surf = pygame.Surface((self._border_size, self._border_size))
         border = pygame.transform.scale(BOARD_BORDER.convert_alpha(), (self._border_size, self._border_size))
@@ -157,42 +136,19 @@ class GameScreen(BaseScreen):
 
         border_surf.blit(playable_surf, (BOARD_BORDER_P,BOARD_BORDER_P))
         return border_surf
-=======
-        surf = pygame.Surface((self._board_size, self._board_size))
-
-        for row in range(8):
-            for col in range(8):
-                is_light = (row + col) % 2 == 0
-                color = COLOR_LIGHT_SQUARE if is_light else COLOR_DARK_SQUARE
-                pygame.draw.rect(surf, color, (col * sq, row * sq, sq, sq))
-
-        # File labels (a-h) along the bottom
-        for col in range(8):
-            label = self._label_font.render(FILE_LABELS[col], True, COLOR_LABEL)
-            surf.blit(label, (col * sq + sq - label.get_width() - 2,
-                              7 * sq + sq - label.get_height() - 1))
-
-        # Rank labels (8-1) along the left
-        for row in range(8):
-            label = self._label_font.render(RANK_LABELS[row], True, COLOR_LABEL)
-            surf.blit(label, (2, row * sq + 1))
-
-        return surf
->>>>>>> 722e78f (Add base application scaffold with main menu, credits, time control, and board screens)
 
     def _render_pieces(self) -> dict:
         """Pre-render placeholder piece surfaces (circle + letter)."""
         sq = self._square_size
         radius = int(sq * 0.38)
         surfaces = {}
-<<<<<<< HEAD
         for piece_type in PieceType:
             for color in Color:
-                if piece_type == PieceType.PAWN:
+                if piece_type == PieceType.PAWN or piece_type == PieceType.ROOK or piece_type == PieceType.KING:
                     piece = (
-                        pygame.transform.scale(PIECE_WHITE[PieceType.PAWN].convert_alpha(), (sq,sq))
+                        pygame.transform.scale(PIECE_WHITE[piece_type].convert_alpha(), (sq,sq))
                         if color == Color.WHITE
-                        else pygame.transform.scale(PIECE_BLACK[PieceType.PAWN].convert_alpha(), (sq,sq))
+                        else pygame.transform.scale(PIECE_BLACK[piece_type].convert_alpha(), (sq,sq))
                     )
                     piece_surf = pygame.Surface((sq,sq), pygame.SRCALPHA)
                     piece_surf.blit(piece, piece_surf.get_rect(center=(sq // 2, sq // 2)))
@@ -225,40 +181,7 @@ class GameScreen(BaseScreen):
                     )
                     letter_rect = letter_surf.get_rect(center=(sq // 2, sq // 2))
                     piece_surf.blit(letter_surf, letter_rect)
-=======
-
-        for piece_type in PieceType:
-            for color in Color:
-                piece_surf = pygame.Surface((sq, sq), pygame.SRCALPHA)
-
-                # Circle
-                circle_color = (
-                    COLOR_WHITE_PIECE if color == Color.WHITE else COLOR_BLACK_PIECE
-                )
-                pygame.draw.circle(
-                    piece_surf, circle_color, (sq // 2, sq // 2), radius
-                )
-                # Border on circle for contrast
-                border_color = (
-                    (180, 180, 180) if color == Color.WHITE else (80, 80, 80)
-                )
-                pygame.draw.circle(
-                    piece_surf, border_color, (sq // 2, sq // 2), radius, 2
-                )
-
-                # Letter
-                text_color = (
-                    COLOR_WHITE_PIECE_TEXT
-                    if color == Color.WHITE
-                    else COLOR_BLACK_PIECE_TEXT
-                )
-                letter_surf = self._piece_font.render(
-                    PIECE_LETTER[piece_type], True, text_color
-                )
-                letter_rect = letter_surf.get_rect(center=(sq // 2, sq // 2))
-                piece_surf.blit(letter_surf, letter_rect)
->>>>>>> 722e78f (Add base application scaffold with main menu, credits, time control, and board screens)
-
+        
                 surfaces[(piece_type, color)] = piece_surf
 
         return surfaces
@@ -270,11 +193,7 @@ class GameScreen(BaseScreen):
         pass
 
     def draw(self) -> None:
-<<<<<<< HEAD
         self.surface.blit(self._scaled_back, (0,0))
-=======
-        self.surface.fill(COLOR_BACKGROUND)
->>>>>>> 722e78f (Add base application scaffold with main menu, credits, time control, and board screens)
 
         # Board
         self.surface.blit(self._board_surface, (self._board_x, self._board_y))
@@ -287,18 +206,9 @@ class GameScreen(BaseScreen):
                 if cell is not None:
                     piece_type, color = cell
                     piece_surf = self._piece_surfaces[(piece_type, color)]
-<<<<<<< HEAD
                     x = self._board_x + col * sq + BOARD_BORDER_P
                     y = self._board_y + row * sq + BOARD_BORDER_P
-=======
-                    x = self._board_x + col * sq
-                    y = self._board_y + row * sq
->>>>>>> 722e78f (Add base application scaffold with main menu, credits, time control, and board screens)
                     self.surface.blit(piece_surf, (x, y))
 
         # Back button
         self._back_button.draw(self.surface)
-<<<<<<< HEAD
-
-=======
->>>>>>> 722e78f (Add base application scaffold with main menu, credits, time control, and board screens)
