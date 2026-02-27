@@ -7,10 +7,11 @@ from src.components.button import Button
 from src.entities.enums import Color, PieceType
 from src.constants import (
     COLOR_BACKGROUND,
-    COLOR_LIGHT_SQUARE,
-    COLOR_DARK_SQUARE,
+    LIGHT_SQUARE,
+    DARK_SQUARE,
+    BOARD_BORDER,
+    BOARD_BORDER_P,
     COLOR_TEXT,
-    COLOR_LABEL,
     FONT_NAME,
     FONT_SIZE_SMALL,
     BUTTON_WIDTH,
@@ -76,13 +77,14 @@ class GameScreen(BaseScreen):
 
         screen_w, screen_h = surface.get_size()
 
-        # Board sizing: fit to ~85% of screen height, centered vertically
-        board_margin = 40
+        # Board sizing: fit to ~60% of screen height, left centered
+        board_margin = 200
         self._square_size = (screen_h - board_margin * 2) // 8
         self._board_size = self._square_size * 8
-
+        self._border_size = self._board_size + (BOARD_BORDER_P * 2)
+        
         # Position board center-left
-        self._board_x = (screen_w - self._board_size) // 2
+        self._board_x = 100
         self._board_y = (screen_h - self._board_size) // 2
 
         # Fonts
@@ -107,16 +109,17 @@ class GameScreen(BaseScreen):
     def _render_board(self) -> pygame.Surface:
         """Draw the 8x8 board with rank/file labels onto a surface."""
         sq = self._square_size
-        surf = pygame.Surface((self._board_size, self._board_size))
-
+        playable_surf = pygame.Surface((self._board_size, self._board_size))
+        border_surf = pygame.Surface((self._border_size, self._border_size))
+        border = pygame.transform.scale(BOARD_BORDER.convert_alpha(), (self._border_size, self._border_size))
+        border_surf.blit(border, (0, 0))
         for row in range(8):
             for col in range(8):
                 is_light = (row + col) % 2 == 0
-                color = COLOR_LIGHT_SQUARE if is_light else COLOR_DARK_SQUARE
-                pygame.draw.rect(surf, color, (col * sq, row * sq, sq, sq))
-
+                color = LIGHT_SQUARE.convert_alpha() if is_light else DARK_SQUARE.convert_alpha()
+                playable_surf.blit(color, (col * sq,row * sq, sq, sq))
         # File labels (a-h) along the bottom
-        for col in range(8):
+        '''for col in range(8):
             label = self._label_font.render(FILE_LABELS[col], True, COLOR_LABEL)
             surf.blit(label, (col * sq + sq - label.get_width() - 2,
                               7 * sq + sq - label.get_height() - 1))
@@ -124,9 +127,9 @@ class GameScreen(BaseScreen):
         # Rank labels (8-1) along the left
         for row in range(8):
             label = self._label_font.render(RANK_LABELS[row], True, COLOR_LABEL)
-            surf.blit(label, (2, row * sq + 1))
-
-        return surf
+            surf.blit(label, (2, row * sq + 1))'''
+        border_surf.blit(playable_surf, (BOARD_BORDER_P,BOARD_BORDER_P))
+        return border_surf
 
     def _render_pieces(self) -> dict:
         """Pre-render placeholder piece surfaces (circle + letter)."""
@@ -189,8 +192,8 @@ class GameScreen(BaseScreen):
                 if cell is not None:
                     piece_type, color = cell
                     piece_surf = self._piece_surfaces[(piece_type, color)]
-                    x = self._board_x + col * sq
-                    y = self._board_y + row * sq
+                    x = self._board_x + col * sq + BOARD_BORDER_P
+                    y = self._board_y + row * sq + BOARD_BORDER_P
                     self.surface.blit(piece_surf, (x, y))
 
         # Back button

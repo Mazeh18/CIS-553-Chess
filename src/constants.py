@@ -15,10 +15,11 @@ COLOR_BUTTON_DISABLED = (65, 62, 58)
 COLOR_BUTTON_BORDER   = (140, 135, 125)
 COLOR_BUTTON_TEXT     = (255, 255, 255)
 
-# Board colors
-COLOR_LIGHT_SQUARE = (240, 217, 181)  # #F0D9B5
-COLOR_DARK_SQUARE  = (181, 136, 99)   # #B58863
-COLOR_LABEL        = (160, 152, 140)  # rank/file labels on the board
+# Board assets
+LIGHT_SQUARE    = pygame.image.load("assets/LightTile.png")  # #F0D9B5
+DARK_SQUARE     = pygame.image.load("assets/DarkTile.png")   # #B58863
+BOARD_BORDER    = pygame.image.load("assets/BoardBorder.png")
+BOARD_BORDER_P  = 64 
 
 # ── Typography ─────────────────────────────────────────────────────────
 FONT_NAME = None  # Pygame default; swap to a .ttf path for custom fonts
