@@ -29,6 +29,9 @@ FONT_SIZE_BUTTON  = 32
 FONT_SIZE_BODY    = 24
 FONT_SIZE_SMALL   = 18
 
+# Board highlights (drag-and-drop)
+COLOR_HIGHLIGHT_ORIGIN  = (70, 130, 180, 100)   # blue tint on origin square
+
 # ── Button Defaults ────────────────────────────────────────────────────
 BUTTON_WIDTH        = 260
 BUTTON_HEIGHT       = 60

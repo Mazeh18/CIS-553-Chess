@@ -4,11 +4,13 @@ from typing import Optional
 import pygame
 
 from src.entities.enums import ScreenType
+from src.entities.time_control import TimeControl
 from src.screens.base_screen import BaseScreen
 from src.screens.start_menu_screen import StartMenuScreen
 from src.screens.credits_screen import CreditsScreen
 from src.screens.time_select_screen import TimeSelectScreen
 from src.screens.game_screen import GameScreen
+from src.controllers.game_controller import GameController
 
 
 class ScreenNavigationController:
@@ -18,6 +20,7 @@ class ScreenNavigationController:
         self._surface = surface
         self.current_screen_type: ScreenType = ScreenType.START_MENU
         self.current_screen: Optional[BaseScreen] = None
+        self._game_controller = GameController()
         self.navigate_to_start_menu()
 
     def navigate_to_start_menu(self) -> None:
@@ -44,10 +47,12 @@ class ScreenNavigationController:
             on_back=self.navigate_to_start_menu,
         )
 
-    def navigate_to_game(self) -> None:
+    def navigate_to_game(self, time_control: TimeControl) -> None:
+        self._game_controller.new_game(time_control)
         self.current_screen_type = ScreenType.GAME
         self.current_screen = GameScreen(
             surface=self._surface,
+            game_controller=self._game_controller,
             on_back=self.navigate_to_start_menu,
         )
 
@@ -58,6 +63,11 @@ class ScreenNavigationController:
     def _handle_time_selected(
         self, minutes: Optional[int], increment: int
     ) -> None:
-        # Time control values are available here for future use.
-        # For now, just navigate to the game screen.
-        self.navigate_to_game()
+        if minutes is None:
+            name = "No Time"
+        else:
+            name = f"{minutes}+{increment}"
+        tc = TimeControl(
+            name=name, time_minutes=minutes, increment_seconds=increment
+        )
+        self.navigate_to_game(tc)
