@@ -29,6 +29,9 @@ class StartMenuScreen(BaseScreen):
 
         self._title_font = pygame.font.Font(FONT_NAME, FONT_SIZE_TITLE)
 
+        self._button_width = BUTTON_WIDTH + 100
+        self._button_height = BUTTON_HEIGHT + 50
+
         screen_w, screen_h = surface.get_size()
         center_x = screen_w // 2
 
@@ -40,23 +43,23 @@ class StartMenuScreen(BaseScreen):
             centerx=center_x, centery=screen_h // 4
         )
 
-        # Buttons centered vertically below midpoint
-        button_start_y = screen_h // 2 - 30
-        button_x = center_x - BUTTON_WIDTH // 2
+        # Buttons centered vertically above midpoint
+        button_start_y = screen_h // 2 - 100
+        button_x = center_x - self._button_width // 2
 
         self._buttons = [
             Button(
                 label="Play",
-                rect=pygame.Rect(button_x, button_start_y, BUTTON_WIDTH, BUTTON_HEIGHT),
+                rect=pygame.Rect(button_x, button_start_y, self._button_width, self._button_height),
                 on_click=on_play,
             ),
             Button(
                 label="Credits",
                 rect=pygame.Rect(
                     button_x,
-                    button_start_y + BUTTON_HEIGHT + BUTTON_SPACING,
-                    BUTTON_WIDTH,
-                    BUTTON_HEIGHT,
+                    button_start_y + self._button_height + BUTTON_SPACING,
+                    self._button_width,
+                    self._button_height,
                 ),
                 on_click=on_credits,
             ),
@@ -64,9 +67,9 @@ class StartMenuScreen(BaseScreen):
                 label="Exit",
                 rect=pygame.Rect(
                     button_x,
-                    button_start_y + 2 * (BUTTON_HEIGHT + BUTTON_SPACING),
-                    BUTTON_WIDTH,
-                    BUTTON_HEIGHT,
+                    button_start_y + 2 * (self._button_height + BUTTON_SPACING),
+                    self._button_width,
+                    self._button_height,
                 ),
                 on_click=on_exit,
             ),
@@ -80,7 +83,10 @@ class StartMenuScreen(BaseScreen):
         pass
 
     def draw(self) -> None:
-        self.surface.fill(COLOR_BACKGROUND)
+        scaled_back = pygame.transform.scale(COLOR_BACKGROUND.convert_alpha(), self.surface.get_size())
+        self.surface.blit(scaled_back, (0,0))
         self.surface.blit(self._title_surface, self._title_rect)
         for button in self._buttons:
             button.draw(self.surface)
+
+        pygame.image.save(self.surface,"assets/screenshot.png")
