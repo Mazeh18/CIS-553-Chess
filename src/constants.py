@@ -9,10 +9,9 @@ COLOR_BACKGROUND      = (49, 46, 43)      # #312E2B
 COLOR_PANEL           = (60, 58, 55)      # #3C3A37
 COLOR_TEXT            = (255, 255, 255)   # #FFFFFF
 COLOR_TEXT_DIM        = (180, 180, 180)
-COLOR_BUTTON          = (90, 87, 82)      # neutral gray
-COLOR_BUTTON_HOVER    = (110, 107, 100)
-COLOR_BUTTON_DISABLED = (65, 62, 58)
-COLOR_BUTTON_BORDER   = (140, 135, 125)
+COLOR_BUTTON          = pygame.image.load("assets/Button.png")
+COLOR_BUTTON_HOVER    = pygame.image.load("assets/ButtonHovered.png")
+COLOR_BUTTON_DISABLED = pygame.image.load("assets/ButtonDisabled.png")
 COLOR_BUTTON_TEXT     = (255, 255, 255)
 
 # Board assets
@@ -33,5 +32,5 @@ FONT_SIZE_SMALL   = 18
 # ── Button Defaults ────────────────────────────────────────────────────
 BUTTON_WIDTH        = 260
 BUTTON_HEIGHT       = 60
-BUTTON_BORDER_RADIUS = 12
 BUTTON_SPACING      = 20
+COLOR_BUTTON_BORDER   = (140, 135, 125)
