@@ -89,7 +89,7 @@ classDiagram
         +int? time_minutes
         +int increment_seconds
         +is_timed() bool
-        +get_starting_seconds() float
+        +get_starting_seconds() int
     }
 
     class MoveHistoryEntry {
