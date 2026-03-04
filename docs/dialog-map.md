@@ -22,6 +22,7 @@ stateDiagram-v2
     TimeSelect --> Game : Select preset or confirm Custom
 
     Game --> TimeSelect : Click New Game button
+    Game --> StartMenu : Click Main Menu button
 ```
 
 ---
@@ -62,6 +63,7 @@ stateDiagram-v2
 
         state Playing {
             [*] --> AwaitingInput
+            AwaitingInput : Turn indicator displayed (White / Black)
 
             AwaitingInput --> Dragging : Press mouse on own piece
             Dragging --> AwaitingInput : Drop on invalid square / off board
@@ -79,10 +81,11 @@ stateDiagram-v2
         Playing --> GameOver : Click Resign
         Playing --> GameOver : Clock timeout
 
-        GameOver : Result displayed\nOnly New Game button active
+        GameOver : Result displayed\nNew Game and Main Menu active
     }
 
     GameOver --> TimeSelect : Click New Game
+    Game --> StartMenu : Click Main Menu
 ```
 
 ---
@@ -104,6 +107,7 @@ Every transition in the dialog map with its trigger event, source, destination, 
 | T-07 | TimeSelect | Game | Select a preset time control | FR-03.4 |
 | T-08 | TimeSelect | Game | Confirm custom time control | FR-03.4 |
 | T-09 | Game (GameOver) | TimeSelect | Click New Game button | FR-15.3 |
+| T-09a | Game | StartMenu | Click Main Menu button | FR-15.4 |
 
 ### TimeSelect Internal Transitions
 

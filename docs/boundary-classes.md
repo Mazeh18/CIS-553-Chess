@@ -115,7 +115,7 @@ These boundary classes are composed within `GameScreen` and each renders a speci
 | `PointAdvantageDisplay` (x2) | Near captured pieces | `CapturedPieces` | Renders point advantage value (e.g., "+2") for the leading player |
 | `MoveHistoryPanel` | Right side | `list[MoveHistoryEntry]` | Renders scrollable move list in algebraic notation |
 | `StatusBar` | Bottom bar | `GameState` | Renders turn indicator ("Turn: WHITE") or result message |
-| `ActionButtonBar` | Bottom bar | `GameState` | Renders action buttons (Undo, Resign, New Game); disables Undo/Resign when game is over |
+| `ActionButtonBar` | Bottom bar | `GameState` | Renders action buttons (Undo, Resign, New Game, Main Menu); adjusts visibility based on game state |
 | `PromotionPopup` | Modal overlay on board | `PieceType` selection | Renders 4 promotion piece options; captures click selection |
 
 ---
@@ -130,7 +130,7 @@ These boundary classes are composed within `GameScreen` and each renders a speci
 |-----------------|-------------|
 | Square colors | Alternating beige (#F0D9B5) and brown (#B58863) squares |
 | Rank/file labels | Labels a-h (columns) and 1-8 (rows) along board edges |
-| Pieces | Unicode chess piece symbols positioned on their squares |
+| Pieces | Piece images positioned on their squares |
 | Origin highlight | Light blue highlight on the square a piece was picked up from |
 | Legal move dots | Gray semi-transparent dots on valid destination squares |
 | Capture highlights | Red tint on squares with capturable enemy pieces |
@@ -149,7 +149,7 @@ Instantiated twice — once for White (bottom-right), once for Black (top-right)
 
 | Element | Description |
 |---------|-------------|
-| Time value | Formatted as MM:SS (or M:SS when under 10 minutes) |
+| Time value | Formatted as MM:SS (zero-padded, e.g., "05:00") |
 | Active indicator | Visual emphasis (bold / highlight) when it is this player's turn |
 | Hidden state | Not rendered when `Clock.enabled` is false (No Time games) |
 
@@ -163,7 +163,7 @@ Instantiated twice — once per player.
 
 | Element | Description |
 |---------|-------------|
-| Piece icons | Small unicode piece symbols in a row, sorted by value |
+| Piece icons | Small piece images in a row, sorted by value |
 
 **Reads From**: `CapturedPieces.white_captured` or `CapturedPieces.black_captured`
 
@@ -216,9 +216,10 @@ Instantiated twice — shown only for the player with the advantage.
 |--------|-------------------|-----------------|
 | Undo | Enabled (if moves exist) | Disabled/Hidden |
 | Resign | Enabled | Disabled/Hidden |
-| New Game | Enabled | Enabled (only active button) |
+| New Game | Disabled/Hidden | Enabled |
+| Main Menu | Enabled | Enabled |
 
-**Signals**: `on_undo`, `on_resign`, `on_new_game`
+**Signals**: `on_undo`, `on_resign`, `on_new_game`, `on_main_menu`
 
 ---
 
@@ -250,7 +251,7 @@ These are generic widgets used across multiple boundary classes.
 | Attribute | Type | Description |
 |-----------|------|-------------|
 | `label` | str | Display text |
-| `rect` | Rect | Position and size |
+| `rect` | pygame.Rect | Position and size |
 | `enabled` | bool | Whether the button is interactive |
 | `hovered` | bool | Whether the mouse is over the button |
 | `on_click` | callback | Function called when clicked |
@@ -265,7 +266,7 @@ These are generic widgets used across multiple boundary classes.
 |-----------|------|-------------|
 | `label` | str | Field label displayed above/beside the input |
 | `value` | str | Current text content |
-| `rect` | Rect | Position and size |
+| `rect` | pygame.Rect | Position and size |
 | `focused` | bool | Whether this input has keyboard focus |
 | `numeric_only` | bool | When true, only allows digit characters |
 
