@@ -29,7 +29,7 @@ Represents the selected time control for a game.
 | Method | Returns | Description |
 |--------|---------|-------------|
 | `is_timed()` | bool | Returns `False` when `time_minutes` is `None` (i.e., "No Time" selected). |
-| `get_starting_seconds()` | float | Returns `time_minutes * 60`. Returns 0 if not timed. |
+| `get_starting_seconds()` | int | Returns `time_minutes * 60`. Returns 0 if not timed. |
 
 ### Preset Time Controls
 

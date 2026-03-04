@@ -22,3 +22,37 @@ Several documents (`class-diagram.md`, `dialog-map.md`, `control-classes.md`) co
 
 - **GitHub**: Mermaid renders automatically in markdown previews.
 - **VS Code**: Install the [Mermaid Extension](https://marketplace.visualstudio.com/items?itemName=MermaidChart.vscode-mermaid-chart).
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.8 or later
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repo-url>
+   cd CIS-553-Chess
+   ```
+
+2. Create and activate a virtual environment (recommended):
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate   # Linux/macOS
+   venv\Scripts\activate      # Windows
+   ```
+
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+### Running the Application
+
+```bash
+python3 main.py
+```
+
+Press **ESC** to exit fullscreen.
