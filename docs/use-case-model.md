@@ -37,7 +37,7 @@ graph LR
     Player --> UC10
     Player --> UC11
 
-    UC03 -->|precedes| UC04
+    UC04 -->|includes| UC03
     UC04 -->|includes| UC05
     UC04 -->|includes| UC06
     UC04 -->|includes| UC07
