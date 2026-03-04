@@ -125,9 +125,10 @@ A desktop chess application built in Python with a graphical user interface. The
 - **FR-15.1**: The system shall provide an **Undo** button that reverses the last move and restores the previous board state (including timers, castling rights, en passant status).
 - **FR-15.2**: The system shall provide a **Resign** button. Clicking it ends the game with a loss for the resigning player.
 - **FR-15.3**: The system shall provide a **New Game** button that returns the players to the time control selection screen.
+- **FR-15.4**: The system shall provide a **Main Menu** button that returns the players to the start menu screen. This button shall be available at all times during the game.
 
 ## FR-16: Game Over
 
 - **FR-16.1**: When the game ends (checkmate, stalemate, draw, resignation, or timeout), the system shall display the result.
-- **FR-16.2**: The only action available after the game ends shall be **New Game**.
+- **FR-16.2**: The actions available after the game ends shall be **New Game** and **Main Menu**.
 - **FR-16.3**: The game-over indication shall **not** block the player's view of the board. The final board position must remain visible.

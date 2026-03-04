@@ -121,7 +121,7 @@ This document identifies the control (logic) classes for the chess application. 
 | `navigate_to_credits()` | Sets screen to CREDITS | FR-02.1 |
 | `navigate_to_time_select()` | Sets screen to TIME_SELECT | FR-03.1 |
 | `navigate_to_game(time_control: TimeControl)` | Sets screen to GAME, triggers GameController.new_game() | FR-03.4, FR-04 |
-| `navigate_to_start_menu()` | Sets screen to START_MENU | FR-01.1, FR-02.3 |
+| `navigate_to_start_menu()` | Sets screen to START_MENU | FR-01.1, FR-02.3, FR-15.4 |
 | `handle_exit()` | Closes the application | FR-01.3 |
 
 ---
@@ -245,5 +245,5 @@ Cross-reference verifying every functional requirement is covered by at least on
 | FR-12 | Time Controls | ClockController, GameController |
 | FR-13 | Turn Management | GameController |
 | FR-14 | Move History | NotationController, GameController |
-| FR-15 | Game Actions (Undo, Resign, New Game) | GameController, ScreenNavigationController |
+| FR-15 | Game Actions (Undo, Resign, New Game, Main Menu) | GameController, ScreenNavigationController |
 | FR-16 | Game Over | GameController |

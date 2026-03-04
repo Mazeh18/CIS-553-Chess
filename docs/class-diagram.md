@@ -69,7 +69,7 @@ classDiagram
         +Color color
         +bool has_moved
         +value() int
-        +symbol() str
+        +icon() str
     }
 
     class Move {
@@ -237,7 +237,7 @@ classDiagram
 | Class | Purpose |
 |-------|---------|
 | `Position` | Represents a square on the board (row 0-7, col 0-7). Supports algebraic notation conversion and equality/hashing for use in sets and dicts. |
-| `Piece` | Represents a single chess piece with its type, color, and move history. `value()` returns standard point value. `symbol()` returns unicode character. |
+| `Piece` | Represents a single chess piece with its type, color, and move history. `value()` returns standard point value. `icon()` returns the visual representation of the piece. |
 | `Move` | Represents a single move with all metadata needed for undo (captured piece, special move flags, clock time). |
 | `TimeControl` | Represents a time control preset. `is_timed()` returns false when time_minutes is None. `get_starting_seconds()` converts minutes to seconds. |
 | `MoveHistoryEntry` | Display-oriented pairing of white and black moves for the move history panel. `from_move_list()` converts raw Move list to display entries. |
