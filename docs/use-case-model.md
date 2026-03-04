@@ -8,53 +8,39 @@
 
 ---
 
-## Use Case Diagram (Text Representation)
+## Use Case Diagram
 
-```
-                        +------------------------------------------+
-                        |           Chess Application              |
-                        |                                          |
-                        |   +----------------------------+         |
-   +--------+           |   | UC-01: Launch Application  |         |
-   |        |---------->|   +----------------------------+         |
-   | Player |           |                                          |
-   |        |---------->|   +----------------------------+         |
-   |        |           |   | UC-02: View Credits        |         |
-   |        |           |   +----------------------------+         |
-   |        |           |                                          |
-   |        |---------->|   +----------------------------+         |
-   |        |           |   | UC-03: Select Time Control |         |
-   |        |           |   +----------------------------+         |
-   |        |           |              |                           |
-   |        |           |              v                           |
-   |        |---------->|   +----------------------------+         |
-   |        |           |   | UC-04: Play Game           |         |
-   |        |           |   +----------------------------+         |
-   |        |           |        |           |       |             |
-   |        |           |        v           v       v             |
-   |        |           |   +--------+ +--------+ +--------+      |
-   |        |           |   | UC-05  | | UC-06  | | UC-07  |      |
-   |        |           |   | Move   | | Capture| | Special|      |
-   |        |           |   | Piece  | | Piece  | | Move   |      |
-   |        |           |   +--------+ +--------+ +--------+      |
-   |        |           |                                          |
-   |        |---------->|   +----------------------------+         |
-   |        |           |   | UC-08: Promote Pawn        |         |
-   |        |           |   +----------------------------+         |
-   |        |           |                                          |
-   |        |---------->|   +----------------------------+         |
-   |        |           |   | UC-09: Undo Move           |         |
-   |        |           |   +----------------------------+         |
-   |        |           |                                          |
-   |        |---------->|   +----------------------------+         |
-   |        |           |   | UC-10: Resign              |         |
-   |        |           |   +----------------------------+         |
-   |        |           |                                          |
-   |        |---------->|   +----------------------------+         |
-   |        |           |   | UC-11: Start New Game      |         |
-   |        |           |   +----------------------------+         |
-   |        |           |                                          |
-   +--------+           +------------------------------------------+
+```mermaid
+graph LR
+    Player((Player))
+
+    subgraph Chess Application
+        UC01[UC-01: Launch Application]
+        UC02[UC-02: View Credits]
+        UC03[UC-03: Select Time Control]
+        UC04[UC-04: Play Game]
+        UC05[UC-05: Move Piece]
+        UC06[UC-06: Capture Piece]
+        UC07[UC-07: Special Move]
+        UC08[UC-08: Promote Pawn]
+        UC09[UC-09: Undo Move]
+        UC10[UC-10: Resign]
+        UC11[UC-11: Start New Game]
+    end
+
+    Player --> UC01
+    Player --> UC02
+    Player --> UC03
+    Player --> UC04
+    Player --> UC08
+    Player --> UC09
+    Player --> UC10
+    Player --> UC11
+
+    UC04 -->|includes| UC03
+    UC04 -->|includes| UC05
+    UC04 -->|includes| UC06
+    UC04 -->|includes| UC07
 ```
 
 ---
