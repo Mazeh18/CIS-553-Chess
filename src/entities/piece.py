@@ -39,8 +39,8 @@ class Piece:
         """Return standard point value (Pawn=1, Knight=3, Bishop=3, Rook=5, Queen=9, King=0)."""
         return PIECE_VALUES[self.piece_type]
 
-    def symbol(self) -> str:
-        """Return the Unicode chess symbol for this piece."""
+    def icon(self) -> str:
+        """Return the visual representation of this piece."""
         return PIECE_SYMBOLS[(self.piece_type, self.color)]
 
     def __repr__(self) -> str:

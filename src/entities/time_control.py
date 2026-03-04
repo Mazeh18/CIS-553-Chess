@@ -18,8 +18,8 @@ class TimeControl:
         """Return True if a time limit is active."""
         return self.time_minutes is not None
 
-    def get_starting_seconds(self) -> float:
-        """Convert time_minutes to seconds. Returns 0.0 if untimed."""
+    def get_starting_seconds(self) -> int:
+        """Convert time_minutes to seconds. Returns 0 if untimed."""
         if self.time_minutes is None:
-            return 0.0
-        return float(self.time_minutes * 60)
+            return 0
+        return self.time_minutes * 60

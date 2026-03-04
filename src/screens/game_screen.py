@@ -72,7 +72,7 @@ class GameScreen(BaseScreen):
 
         # Back button (top-left corner)
         self._back_button = Button(
-            label="Back to Menu",
+            label="Main Menu",
             rect=pygame.Rect(20, 20, BUTTON_WIDTH, BUTTON_HEIGHT),
             on_click=on_back,
         )
