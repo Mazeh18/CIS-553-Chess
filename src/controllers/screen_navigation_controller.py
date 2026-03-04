@@ -60,14 +60,10 @@ class ScreenNavigationController:
         pygame.quit()
         sys.exit()
 
-    def _handle_time_selected(
-        self, minutes: Optional[int], increment: int
-    ) -> None:
+    def _handle_time_selected(self, minutes: Optional[int], increment: int) -> None:
         if minutes is None:
             name = "No Time"
         else:
             name = f"{minutes}+{increment}"
-        tc = TimeControl(
-            name=name, time_minutes=minutes, increment_seconds=increment
-        )
+        tc = TimeControl(name=name, time_minutes=minutes, increment_seconds=increment)
         self.navigate_to_game(tc)

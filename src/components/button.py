@@ -58,8 +58,11 @@ class Button:
             surface, bg_color, self.rect, border_radius=BUTTON_BORDER_RADIUS
         )
         pygame.draw.rect(
-            surface, COLOR_BUTTON_BORDER, self.rect,
-            width=2, border_radius=BUTTON_BORDER_RADIUS,
+            surface,
+            COLOR_BUTTON_BORDER,
+            self.rect,
+            width=2,
+            border_radius=BUTTON_BORDER_RADIUS,
         )
 
         text_surface = self._font.render(self.label, True, text_color)

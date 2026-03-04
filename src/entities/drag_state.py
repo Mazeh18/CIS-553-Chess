@@ -14,9 +14,7 @@ class DragState:
         self.mouse_pos: Optional[tuple] = None
         self.legal_moves: list[Position] = []
 
-    def start_drag(
-        self, piece: Piece, origin: Position, moves: list[Position]
-    ) -> None:
+    def start_drag(self, piece: Piece, origin: Position, moves: list[Position]) -> None:
         """Begin a drag interaction."""
         self.is_dragging = True
         self.piece = piece

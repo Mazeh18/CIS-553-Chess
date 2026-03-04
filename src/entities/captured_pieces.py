@@ -8,8 +8,12 @@ class CapturedPieces:
     """Tracks captured pieces for both players and calculates point advantage."""
 
     def __init__(self) -> None:
-        self.white_captured: list[Piece] = []  # pieces captured BY White (Black's lost pieces)
-        self.black_captured: list[Piece] = []  # pieces captured BY Black (White's lost pieces)
+        self.white_captured: list[Piece] = (
+            []
+        )  # pieces captured BY White (Black's lost pieces)
+        self.black_captured: list[Piece] = (
+            []
+        )  # pieces captured BY Black (White's lost pieces)
 
     def add_captured(self, piece: Piece) -> None:
         """Add a captured piece to the appropriate list based on the piece's color."""

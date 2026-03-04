@@ -38,11 +38,13 @@ class GameStatus(Enum):
 
     def is_game_over(self) -> bool:
         return self in (
-            GameStatus.CHECKMATE, GameStatus.STALEMATE,
+            GameStatus.CHECKMATE,
+            GameStatus.STALEMATE,
             GameStatus.DRAW_INSUFFICIENT_MATERIAL,
             GameStatus.DRAW_THREEFOLD_REPETITION,
             GameStatus.DRAW_FIFTY_MOVE,
-            GameStatus.RESIGNED, GameStatus.TIMEOUT,
+            GameStatus.RESIGNED,
+            GameStatus.TIMEOUT,
         )
 
     def is_draw(self) -> bool:

@@ -30,16 +30,17 @@ class GameController:
         """Validate and execute a move. Returns MoveResult."""
         if self.game_state is None or self.game_state.is_game_over():
             return MoveResult(
-                success=False, is_promotion=False, new_status=self.game_state.status
-                if self.game_state else GameStatus.ACTIVE
+                success=False,
+                is_promotion=False,
+                new_status=(
+                    self.game_state.status if self.game_state else GameStatus.ACTIVE
+                ),
             )
 
         board = self.game_state.board
 
         # Validate the move
-        legal_moves = self._move_validator.get_legal_moves(
-            board, attempt.start_pos
-        )
+        legal_moves = self._move_validator.get_legal_moves(board, attempt.start_pos)
         if attempt.end_pos not in legal_moves:
             return MoveResult(
                 success=False,
@@ -100,9 +101,7 @@ class GameController:
         """Get legal destinations for the piece at the given position."""
         if self.game_state is None:
             return []
-        return self._move_validator.get_legal_moves(
-            self.game_state.board, position
-        )
+        return self._move_validator.get_legal_moves(self.game_state.board, position)
 
     def update(self, delta: float) -> None:
         """Called each frame. Clock updates will go here in the future."""
@@ -118,9 +117,7 @@ class GameController:
         """Stub for future undo functionality."""
         pass
 
-    def _check_post_move_status(
-        self, board: Board, color_to_move: Color
-    ) -> GameStatus:
+    def _check_post_move_status(self, board: Board, color_to_move: Color) -> GameStatus:
         """Check for check, checkmate, stalemate after a move."""
         in_check = self._move_validator.is_in_check(board, color_to_move)
 

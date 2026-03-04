@@ -24,7 +24,7 @@ class NotationController:
         if move.piece.piece_type == PieceType.PAWN:
             if move.captured_piece is not None:
                 # Pawn captures use file letter: e.g., exd5
-                file_letter = chr(ord('a') + move.start_pos.col)
+                file_letter = chr(ord("a") + move.start_pos.col)
                 return f"{file_letter}x{dest}"
             else:
                 return dest
@@ -58,15 +58,13 @@ class NotationController:
         same_rank = any(p.row == move.start_pos.row for p in ambiguous)
 
         if not same_file:
-            return chr(ord('a') + move.start_pos.col)
+            return chr(ord("a") + move.start_pos.col)
         elif not same_rank:
             return str(8 - move.start_pos.row)
         else:
             return move.start_pos.to_algebraic()
 
-    def _can_reach(
-        self, board: Board, from_pos, to_pos, piece
-    ) -> bool:
+    def _can_reach(self, board: Board, from_pos, to_pos, piece) -> bool:
         """Simple reachability check for disambiguation purposes."""
         dr = to_pos.row - from_pos.row
         dc = to_pos.col - from_pos.col

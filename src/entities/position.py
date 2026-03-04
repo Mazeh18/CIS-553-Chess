@@ -7,14 +7,14 @@ class Position:
 
     def to_algebraic(self) -> str:
         """Convert to algebraic notation (e.g., 'e4')."""
-        file = chr(ord('a') + self.col)
+        file = chr(ord("a") + self.col)
         rank = str(8 - self.row)
         return f"{file}{rank}"
 
     @staticmethod
     def from_algebraic(notation: str) -> "Position":
         """Create Position from algebraic notation (e.g., 'e4')."""
-        col = ord(notation[0]) - ord('a')
+        col = ord(notation[0]) - ord("a")
         row = 8 - int(notation[1])
         return Position(row, col)
 

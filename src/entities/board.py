@@ -30,8 +30,14 @@ class Board:
         self.position_history = []
 
         back_rank = [
-            PieceType.ROOK, PieceType.KNIGHT, PieceType.BISHOP, PieceType.QUEEN,
-            PieceType.KING, PieceType.BISHOP, PieceType.KNIGHT, PieceType.ROOK,
+            PieceType.ROOK,
+            PieceType.KNIGHT,
+            PieceType.BISHOP,
+            PieceType.QUEEN,
+            PieceType.KING,
+            PieceType.BISHOP,
+            PieceType.KNIGHT,
+            PieceType.ROOK,
         ]
 
         # Black back rank (row 0 = rank 8)
@@ -115,9 +121,7 @@ class Board:
             for col in range(8):
                 piece = self.squares[row][col]
                 if piece is not None:
-                    parts.append(
-                        f"{row}{col}{piece.piece_type.name}{piece.color.name}"
-                    )
+                    parts.append(f"{row}{col}{piece.piece_type.name}{piece.color.name}")
         parts.append(self.current_turn.name)
         return "|".join(parts)
 

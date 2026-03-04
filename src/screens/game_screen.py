@@ -65,9 +65,7 @@ class GameScreen(BaseScreen):
 
         # Fonts
         self._label_font = pygame.font.Font(FONT_NAME, FONT_SIZE_SMALL)
-        self._piece_font = pygame.font.Font(
-            FONT_NAME, int(self._square_size * 0.45)
-        )
+        self._piece_font = pygame.font.Font(FONT_NAME, int(self._square_size * 0.45))
         self._status_font = pygame.font.Font(FONT_NAME, FONT_SIZE_BODY)
 
         # Back button (top-left corner)
@@ -112,8 +110,13 @@ class GameScreen(BaseScreen):
         # File labels (a-h) along the bottom
         for col in range(8):
             label = self._label_font.render(FILE_LABELS[col], True, COLOR_LABEL)
-            surf.blit(label, (col * sq + sq - label.get_width() - 2,
-                              7 * sq + sq - label.get_height() - 1))
+            surf.blit(
+                label,
+                (
+                    col * sq + sq - label.get_width() - 2,
+                    7 * sq + sq - label.get_height() - 1,
+                ),
+            )
 
         # Rank labels (8-1) along the left
         for row in range(8):
@@ -135,12 +138,8 @@ class GameScreen(BaseScreen):
                 circle_color = (
                     COLOR_WHITE_PIECE if color == Color.WHITE else COLOR_BLACK_PIECE
                 )
-                pygame.draw.circle(
-                    piece_surf, circle_color, (sq // 2, sq // 2), radius
-                )
-                border_color = (
-                    (180, 180, 180) if color == Color.WHITE else (80, 80, 80)
-                )
+                pygame.draw.circle(piece_surf, circle_color, (sq // 2, sq // 2), radius)
+                border_color = (180, 180, 180) if color == Color.WHITE else (80, 80, 80)
                 pygame.draw.circle(
                     piece_surf, border_color, (sq // 2, sq // 2), radius, 2
                 )
@@ -206,9 +205,7 @@ class GameScreen(BaseScreen):
                         and self._drag_state.origin.col == col
                     ):
                         continue
-                    piece_surf = self._piece_surfaces[
-                        (piece.piece_type, piece.color)
-                    ]
+                    piece_surf = self._piece_surfaces[(piece.piece_type, piece.color)]
                     x = self._board_x + col * sq
                     y = self._board_y + row * sq
                     self.surface.blit(piece_surf, (x, y))
@@ -220,13 +217,9 @@ class GameScreen(BaseScreen):
             and self._drag_state.mouse_pos
         ):
             piece = self._drag_state.piece
-            piece_surf = self._piece_surfaces[
-                (piece.piece_type, piece.color)
-            ]
+            piece_surf = self._piece_surfaces[(piece.piece_type, piece.color)]
             mx, my = self._drag_state.mouse_pos
-            self.surface.blit(
-                piece_surf, (mx - sq // 2, my - sq // 2)
-            )
+            self.surface.blit(piece_surf, (mx - sq // 2, my - sq // 2))
 
         # Turn indicator / status text
         self._draw_status()
@@ -257,25 +250,25 @@ class GameScreen(BaseScreen):
                 # Capture highlight: semi-transparent ring
                 ring_surf = pygame.Surface((sq, sq), pygame.SRCALPHA)
                 pygame.draw.circle(
-                    ring_surf, (0, 0, 0, 60),
-                    (sq // 2, sq // 2), sq // 2 - 2, 4
+                    ring_surf, (0, 0, 0, 60), (sq // 2, sq // 2), sq // 2 - 2, 4
                 )
                 self.surface.blit(
                     ring_surf,
-                    (self._board_x + move_pos.col * sq,
-                     self._board_y + move_pos.row * sq),
+                    (
+                        self._board_x + move_pos.col * sq,
+                        self._board_y + move_pos.row * sq,
+                    ),
                 )
             else:
                 # Normal move: small dot
                 dot_surf = pygame.Surface((sq, sq), pygame.SRCALPHA)
-                pygame.draw.circle(
-                    dot_surf, (0, 0, 0, 60),
-                    (sq // 2, sq // 2), sq // 6
-                )
+                pygame.draw.circle(dot_surf, (0, 0, 0, 60), (sq // 2, sq // 2), sq // 6)
                 self.surface.blit(
                     dot_surf,
-                    (self._board_x + move_pos.col * sq,
-                     self._board_y + move_pos.row * sq),
+                    (
+                        self._board_x + move_pos.col * sq,
+                        self._board_y + move_pos.row * sq,
+                    ),
                 )
 
     def _draw_status(self) -> None:

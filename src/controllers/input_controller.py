@@ -26,9 +26,7 @@ class InputController:
         self._get_legal_moves = get_legal_moves_fn
         self._get_current_turn = get_current_turn_fn
 
-    def handle_mouse_down(
-        self, pixel_pos: tuple, board: Board
-    ) -> None:
+    def handle_mouse_down(self, pixel_pos: tuple, board: Board) -> None:
         """On mouse down: if clicking own piece, start drag with legal moves."""
         pos = self.pixel_to_board_position(pixel_pos)
         if pos is None:
@@ -51,9 +49,7 @@ class InputController:
         if self._drag_state.is_dragging:
             self._drag_state.update_mouse(pixel_pos)
 
-    def handle_mouse_up(
-        self, pixel_pos: tuple
-    ) -> Optional[MoveAttempt]:
+    def handle_mouse_up(self, pixel_pos: tuple) -> Optional[MoveAttempt]:
         """On mouse up: if valid destination, return MoveAttempt; else cancel drag."""
         if not self._drag_state.is_dragging:
             return None
@@ -74,9 +70,7 @@ class InputController:
 
         return None
 
-    def pixel_to_board_position(
-        self, pixel_pos: tuple
-    ) -> Optional[Position]:
+    def pixel_to_board_position(self, pixel_pos: tuple) -> Optional[Position]:
         """Convert screen pixel coordinates to a board Position."""
         px, py = pixel_pos
         col = (px - self._board_x) // self._square_size

@@ -7,9 +7,7 @@ from src.entities.enums import Color, PieceType
 class MoveValidator:
     """Stateless chess move legality checker."""
 
-    def get_legal_moves(
-        self, board: Board, position: Position
-    ) -> list[Position]:
+    def get_legal_moves(self, board: Board, position: Position) -> list[Position]:
         """Return all legal destination squares for the piece at the given position."""
         piece = board.get_piece(position)
         if piece is None:
@@ -131,8 +129,14 @@ class MoveValidator:
     ) -> list[Position]:
         """Queen: combines rook + bishop moves."""
         directions = [
-            (0, 1), (0, -1), (1, 0), (-1, 0),
-            (1, 1), (1, -1), (-1, 1), (-1, -1),
+            (0, 1),
+            (0, -1),
+            (1, 0),
+            (-1, 0),
+            (1, 1),
+            (1, -1),
+            (-1, 1),
+            (-1, -1),
         ]
         return self._get_sliding_moves(board, pos, directions, piece.color)
 
@@ -161,8 +165,14 @@ class MoveValidator:
         """Knight: L-shaped jumps, can skip over pieces."""
         moves = []
         offsets = [
-            (-2, -1), (-2, 1), (-1, -2), (-1, 2),
-            (1, -2), (1, 2), (2, -1), (2, 1),
+            (-2, -1),
+            (-2, 1),
+            (-1, -2),
+            (-1, 2),
+            (1, -2),
+            (1, 2),
+            (2, -1),
+            (2, 1),
         ]
         for dr, dc in offsets:
             target = Position(pos.row + dr, pos.col + dc)

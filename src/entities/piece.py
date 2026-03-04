@@ -16,12 +16,12 @@ PIECE_SYMBOLS = {
     (PieceType.BISHOP, Color.WHITE): "\u2657",
     (PieceType.KNIGHT, Color.WHITE): "\u2658",
     (PieceType.PAWN, Color.WHITE): "\u2659",
-    (PieceType.KING, Color.BLACK): "\u265A",
-    (PieceType.QUEEN, Color.BLACK): "\u265B",
-    (PieceType.ROOK, Color.BLACK): "\u265C",
-    (PieceType.BISHOP, Color.BLACK): "\u265D",
-    (PieceType.KNIGHT, Color.BLACK): "\u265E",
-    (PieceType.PAWN, Color.BLACK): "\u265F",
+    (PieceType.KING, Color.BLACK): "\u265a",
+    (PieceType.QUEEN, Color.BLACK): "\u265b",
+    (PieceType.ROOK, Color.BLACK): "\u265c",
+    (PieceType.BISHOP, Color.BLACK): "\u265d",
+    (PieceType.KNIGHT, Color.BLACK): "\u265e",
+    (PieceType.PAWN, Color.BLACK): "\u265f",
 }
 
 
