@@ -78,10 +78,13 @@ class GameScreen(BaseScreen):
         screen_w, screen_h = surface.get_size()
 
         # Board sizing: fit to ~60% of screen height, left centered
-        board_margin = 200
+        board_margin = 300
         self._square_size = (screen_h - board_margin * 2) // 8
         self._board_size = self._square_size * 8
         self._border_size = self._board_size + (BOARD_BORDER_P * 2)
+        
+        # Background
+        self._scaled_back = pygame.transform.scale(COLOR_BACKGROUND.convert_alpha(), self.surface.get_size())
         
         # Position board center-left
         self._board_x = 100
@@ -118,16 +121,7 @@ class GameScreen(BaseScreen):
                 is_light = (row + col) % 2 == 0
                 color = LIGHT_SQUARE.convert_alpha() if is_light else DARK_SQUARE.convert_alpha()
                 playable_surf.blit(color, (col * sq,row * sq, sq, sq))
-        # File labels (a-h) along the bottom
-        '''for col in range(8):
-            label = self._label_font.render(FILE_LABELS[col], True, COLOR_LABEL)
-            surf.blit(label, (col * sq + sq - label.get_width() - 2,
-                              7 * sq + sq - label.get_height() - 1))
 
-        # Rank labels (8-1) along the left
-        for row in range(8):
-            label = self._label_font.render(RANK_LABELS[row], True, COLOR_LABEL)
-            surf.blit(label, (2, row * sq + 1))'''
         border_surf.blit(playable_surf, (BOARD_BORDER_P,BOARD_BORDER_P))
         return border_surf
 
@@ -179,7 +173,7 @@ class GameScreen(BaseScreen):
         pass
 
     def draw(self) -> None:
-        self.surface.fill(COLOR_BACKGROUND)
+        self.surface.blit(self._scaled_back, (0,0))
 
         # Board
         self.surface.blit(self._board_surface, (self._board_x, self._board_y))
@@ -198,3 +192,4 @@ class GameScreen(BaseScreen):
 
         # Back button
         self._back_button.draw(self.surface)
+

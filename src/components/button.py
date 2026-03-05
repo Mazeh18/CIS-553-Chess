@@ -54,7 +54,17 @@ class Button:
 
         scaled_image = pygame.transform.scale(bg_color, self.rect.size)
         surface.blit(scaled_image, self.rect)
-
-        text_surface = self._font.render(self.label, True, text_color)
-        text_rect = text_surface.get_rect(center=self.rect.center)
-        surface.blit(text_surface, text_rect)
+        
+        # Text wrapping
+        lines = self.label.split("\n")
+        line_height = self._font.get_height()
+        total_height = len(lines) * line_height
+        y_offset = self.rect.y + (self.rect.height - total_height) // 2
+        for line in lines:
+            text_surface = self._font.render(line.strip(), True, text_color)
+            text_rect = text_surface.get_rect(centerx=self.rect.centerx)
+            text_rect.y = y_offset
+            surface.blit(text_surface, text_rect)
+            y_offset += line_height
+            
+        
