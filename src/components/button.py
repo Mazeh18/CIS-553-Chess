@@ -54,7 +54,6 @@ class Button:
 
         scaled_image = pygame.transform.scale(bg_color, self.rect.size)
         surface.blit(scaled_image, self.rect)
-<<<<<<< HEAD
         
         # Text wrapping
         lines = self.label.split("\n")
@@ -69,9 +68,3 @@ class Button:
             y_offset += line_height
             
         
-=======
-
-        text_surface = self._font.render(self.label, True, text_color)
-        text_rect = text_surface.get_rect(center=self.rect.center)
-        surface.blit(text_surface, text_rect)
->>>>>>> 656e914 (Added button asset and began customizing it to the menus.)
