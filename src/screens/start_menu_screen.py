@@ -34,7 +34,7 @@ class StartMenuScreen(BaseScreen):
 
         screen_w, screen_h = surface.get_size()
         center_x = screen_w // 2
-
+        self._scaled_back = pygame.transform.scale(COLOR_BACKGROUND.convert_alpha(), self.surface.get_size())
         # Title in upper quarter
         self._title_surface = self._title_font.render(
             "CHESS", True, COLOR_TEXT
@@ -83,10 +83,8 @@ class StartMenuScreen(BaseScreen):
         pass
 
     def draw(self) -> None:
-        scaled_back = pygame.transform.scale(COLOR_BACKGROUND.convert_alpha(), self.surface.get_size())
-        self.surface.blit(scaled_back, (0,0))
+        self.surface.blit(self._scaled_back, (0,0))
         self.surface.blit(self._title_surface, self._title_rect)
         for button in self._buttons:
             button.draw(self.surface)
 
-        pygame.image.save(self.surface,"assets/screenshot.png")

@@ -26,8 +26,8 @@ FONT_NAME = "assets/Font/C_Gothic_Bold_Regular.ttf"  # Copperplate Gothic Bold R
 FONT_SIZE_TITLE   = 172
 FONT_SIZE_HEADING = 96
 FONT_SIZE_BUTTON  = 64
-FONT_SIZE_BODY    = 24
-FONT_SIZE_SMALL   = 18
+FONT_SIZE_BODY    = 64
+FONT_SIZE_SMALL   = 32
 
 # ── Button Defaults ────────────────────────────────────────────────────
 BUTTON_WIDTH        = 260

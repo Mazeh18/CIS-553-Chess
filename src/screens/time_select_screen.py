@@ -19,10 +19,10 @@ from src.constants import (
 
 # (label, minutes or None, increment_seconds)
 PRESETS = [
-    ("Bullet (2+1)", 2, 1),
-    ("Blitz (5+0)", 5, 0),
-    ("Rapid (10+5)", 10, 5),
-    ("Classic (30+20)", 30, 20),
+    ("Bullet\n(2+1)", 2, 1),
+    ("Blitz\n(5+0)", 5, 0),
+    ("Rapid\n(10+5)", 10, 5),
+    ("Classic\n(30+20)", 30, 20),
     ("No Time", None, 0),
     ("Custom", None, None),  # sentinel — triggers custom view
 ]
@@ -47,7 +47,10 @@ class TimeSelectScreen(BaseScreen):
         center_x = screen_w // 2
 
         heading_font = pygame.font.Font(FONT_NAME, FONT_SIZE_HEADING)
-
+        
+        # Background
+        self._scaled_back = pygame.transform.scale(COLOR_BACKGROUND.convert_alpha(), self.surface.get_size())
+        
         # ── Preset view ───────────────────────────────────────
         self._preset_title_surface = heading_font.render(
             "Select Time Control", True, COLOR_TEXT
@@ -57,13 +60,13 @@ class TimeSelectScreen(BaseScreen):
         )
 
         # 2x3 grid of preset buttons
-        btn_w, btn_h = BUTTON_WIDTH, BUTTON_HEIGHT
-        grid_gap = BUTTON_SPACING
+        btn_w, btn_h = BUTTON_WIDTH + 100, BUTTON_HEIGHT + 100
+        grid_gap = BUTTON_SPACING + 20
         cols, rows = 3, 2
         grid_w = cols * btn_w + (cols - 1) * grid_gap
         grid_h = rows * btn_h + (rows - 1) * grid_gap
         grid_x = center_x - grid_w // 2
-        grid_y = screen_h // 3 - grid_h // 2
+        grid_y = screen_h // 3 - grid_h // 2 + 100
 
         self._preset_buttons: list[Button] = []
         for i, (label, minutes, increment) in enumerate(PRESETS):
@@ -85,10 +88,10 @@ class TimeSelectScreen(BaseScreen):
         self._preset_back = Button(
             label="Back",
             rect=pygame.Rect(
-                center_x - btn_w // 2,
+                center_x - (BUTTON_WIDTH + 40) // 2,
                 grid_y + grid_h + 60,
-                btn_w,
-                btn_h,
+                BUTTON_WIDTH + 40,
+                BUTTON_HEIGHT + 40,
             ),
             on_click=on_back,
         )
@@ -190,7 +193,7 @@ class TimeSelectScreen(BaseScreen):
             self._increment_input.update(dt)
 
     def draw(self) -> None:
-        self.surface.fill(COLOR_BACKGROUND)
+        self.surface.blit(self._scaled_back, (0,0))
 
         if self._showing_custom:
             self.surface.blit(self._custom_title_surface, self._custom_title_rect)

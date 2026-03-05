@@ -8,6 +8,7 @@ from src.constants import (
     COLOR_BACKGROUND,
     COLOR_TEXT,
     FONT_NAME,
+    FONT_SIZE_TITLE,
     FONT_SIZE_HEADING,
     FONT_SIZE_BODY,
     FONT_SIZE_BUTTON,
@@ -38,10 +39,13 @@ class CreditsScreen(BaseScreen):
         screen_w, screen_h = surface.get_size()
         center_x = screen_w // 2
 
-        heading_font = pygame.font.Font(FONT_NAME, FONT_SIZE_HEADING)
-        subheading_font = pygame.font.Font(FONT_NAME, FONT_SIZE_BUTTON)
+        heading_font = pygame.font.Font(FONT_NAME, FONT_SIZE_TITLE)
+        subheading_font = pygame.font.Font(FONT_NAME, FONT_SIZE_HEADING)
         body_font = pygame.font.Font(FONT_NAME, FONT_SIZE_BODY)
-
+        
+        # Background
+        self._scaled_back = pygame.transform.scale(COLOR_BACKGROUND.convert_alpha(), self.surface.get_size())
+        
         # Title
         self._title_surface = heading_font.render("Credits", True, COLOR_TEXT)
         self._title_rect = self._title_surface.get_rect(
@@ -51,13 +55,13 @@ class CreditsScreen(BaseScreen):
         # "Developed By:" subheading
         self._dev_surface = subheading_font.render("Developed By:", True, COLOR_TEXT)
         self._dev_rect = self._dev_surface.get_rect(
-            centerx=center_x, centery=screen_h // 6 + 80
+            centerx=center_x, centery=screen_h // 6 + 120
         )
 
         # Author names
         self._author_surfaces = []
-        line_height = 36
-        start_y = screen_h // 6 + 130
+        line_height = 64
+        start_y = screen_h // 6 + 240
         for i, name in enumerate(AUTHORS):
             surf = body_font.render(name, True, COLOR_TEXT)
             rect = surf.get_rect(centerx=center_x, centery=start_y + i * line_height)
@@ -67,10 +71,10 @@ class CreditsScreen(BaseScreen):
         self._back_button = Button(
             label="Back",
             rect=pygame.Rect(
-                center_x - BUTTON_WIDTH // 2,
-                screen_h - 120,
-                BUTTON_WIDTH,
-                BUTTON_HEIGHT,
+                center_x - (BUTTON_WIDTH+60) // 2,
+                screen_h - 200,
+                BUTTON_WIDTH+60,
+                BUTTON_HEIGHT+30,
             ),
             on_click=on_back,
         )
@@ -82,7 +86,7 @@ class CreditsScreen(BaseScreen):
         pass
 
     def draw(self) -> None:
-        self.surface.fill(COLOR_BACKGROUND)
+        self.surface.blit(self._scaled_back, (0,0))
         self.surface.blit(self._title_surface, self._title_rect)
         self.surface.blit(self._dev_surface, self._dev_rect)
         for surf, rect in self._author_surfaces:
