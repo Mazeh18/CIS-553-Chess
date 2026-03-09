@@ -33,10 +33,12 @@ PIECES = {
 }
 
 PIECE_WHITE = {
+    PieceType.ROOK: pygame.image.load("assets/Pieces/RookWhite.png"),
     PieceType.PAWN: pygame.image.load("assets/Pieces/PawnWhite.png")
 }
 
 PIECE_BLACK = {
+    PieceType.ROOK: pygame.image.load("assets/Pieces/RookBlack.png"),
     PieceType.PAWN: pygame.image.load("assets/Pieces/PawnBlack.png")
 }
 
@@ -86,7 +88,7 @@ class GameScreen(BaseScreen):
         screen_w, screen_h = surface.get_size()
 
         # Board sizing: fit to ~60% of screen height, left centered
-        board_margin = 300
+        board_margin = 200
         self._square_size = (screen_h - board_margin * 2) // 8
         self._board_size = self._square_size * 8
         self._border_size = self._board_size + (BOARD_BORDER_P * 2)
@@ -140,11 +142,11 @@ class GameScreen(BaseScreen):
         surfaces = {}
         for piece_type in PieceType:
             for color in Color:
-                if piece_type == PieceType.PAWN:
+                if piece_type == PieceType.PAWN or piece_type == PieceType.ROOK:
                     piece = (
-                        pygame.transform.scale(PIECE_WHITE[PieceType.PAWN].convert_alpha(), (sq,sq))
+                        pygame.transform.scale(PIECE_WHITE[piece_type].convert_alpha(), (sq,sq))
                         if color == Color.WHITE
-                        else pygame.transform.scale(PIECE_BLACK[PieceType.PAWN].convert_alpha(), (sq,sq))
+                        else pygame.transform.scale(PIECE_BLACK[piece_type].convert_alpha(), (sq,sq))
                     )
                     piece_surf = pygame.Surface((sq,sq), pygame.SRCALPHA)
                     piece_surf.blit(piece, piece_surf.get_rect(center=(sq // 2, sq // 2)))
@@ -177,7 +179,7 @@ class GameScreen(BaseScreen):
                     )
                     letter_rect = letter_surf.get_rect(center=(sq // 2, sq // 2))
                     piece_surf.blit(letter_surf, letter_rect)
-
+        
                 surfaces[(piece_type, color)] = piece_surf
 
         return surfaces
