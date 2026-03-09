@@ -23,13 +23,21 @@ from src.constants import (
 # To swap in real PNGs later, replace _draw_piece() or load images into
 # PIECE_IMAGES and blit them instead.
 
-PIECE_LETTER = {
+PIECES = {
     PieceType.KING: "K",
     PieceType.QUEEN: "Q",
     PieceType.ROOK: "R",
     PieceType.BISHOP: "B",
     PieceType.KNIGHT: "N",
     PieceType.PAWN: "P",
+}
+
+PIECE_WHITE = {
+    PieceType.PAWN: pygame.image.load("assets/Pieces/PawnWhite.png")
+}
+
+PIECE_BLACK = {
+    PieceType.PAWN: pygame.image.load("assets/Pieces/PawnBlack.png")
 }
 
 COLOR_WHITE_PIECE = (255, 255, 255)
@@ -130,37 +138,45 @@ class GameScreen(BaseScreen):
         sq = self._square_size
         radius = int(sq * 0.38)
         surfaces = {}
-
         for piece_type in PieceType:
             for color in Color:
-                piece_surf = pygame.Surface((sq, sq), pygame.SRCALPHA)
+                if piece_type == PieceType.PAWN:
+                    piece = (
+                        pygame.transform.scale(PIECE_WHITE[PieceType.PAWN].convert_alpha(), (sq,sq))
+                        if color == Color.WHITE
+                        else pygame.transform.scale(PIECE_BLACK[PieceType.PAWN].convert_alpha(), (sq,sq))
+                    )
+                    piece_surf = pygame.Surface((sq,sq), pygame.SRCALPHA)
+                    piece_surf.blit(piece, piece_surf.get_rect(center=(sq // 2, sq // 2)))
+                else:
+                    piece_surf = pygame.Surface((sq, sq), pygame.SRCALPHA)
 
-                # Circle
-                circle_color = (
-                    COLOR_WHITE_PIECE if color == Color.WHITE else COLOR_BLACK_PIECE
-                )
-                pygame.draw.circle(
-                    piece_surf, circle_color, (sq // 2, sq // 2), radius
-                )
-                # Border on circle for contrast
-                border_color = (
-                    (180, 180, 180) if color == Color.WHITE else (80, 80, 80)
-                )
-                pygame.draw.circle(
-                    piece_surf, border_color, (sq // 2, sq // 2), radius, 2
-                )
+                    # Circle
+                    circle_color = (
+                        COLOR_WHITE_PIECE if color == Color.WHITE else COLOR_BLACK_PIECE
+                    )
+                    pygame.draw.circle(
+                        piece_surf, circle_color, (sq // 2, sq // 2), radius
+                    )
+                    # Border on circle for contrast
+                    border_color = (
+                        (180, 180, 180) if color == Color.WHITE else (80, 80, 80)
+                    )
+                    pygame.draw.circle(
+                        piece_surf, border_color, (sq // 2, sq // 2), radius, 2
+                    )
 
-                # Letter
-                text_color = (
-                    COLOR_WHITE_PIECE_TEXT
-                    if color == Color.WHITE
-                    else COLOR_BLACK_PIECE_TEXT
-                )
-                letter_surf = self._piece_font.render(
-                    PIECE_LETTER[piece_type], True, text_color
-                )
-                letter_rect = letter_surf.get_rect(center=(sq // 2, sq // 2))
-                piece_surf.blit(letter_surf, letter_rect)
+                    # Letter
+                    text_color = (
+                        COLOR_WHITE_PIECE_TEXT
+                        if color == Color.WHITE
+                        else COLOR_BLACK_PIECE_TEXT
+                    )
+                    letter_surf = self._piece_font.render(
+                        PIECES[piece_type], True, text_color
+                    )
+                    letter_rect = letter_surf.get_rect(center=(sq // 2, sq // 2))
+                    piece_surf.blit(letter_surf, letter_rect)
 
                 surfaces[(piece_type, color)] = piece_surf
 
