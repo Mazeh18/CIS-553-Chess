@@ -90,7 +90,7 @@ class GameScreen(BaseScreen):
         screen_w, screen_h = surface.get_size()
 
         # Board sizing: fit to ~60% of screen height, left centered
-        board_margin = 300
+        board_margin = 200
         self._square_size = (screen_h - board_margin * 2) // 8
         self._board_size = self._square_size * 8
         self._border_size = self._board_size + (BOARD_BORDER_P * 2)
