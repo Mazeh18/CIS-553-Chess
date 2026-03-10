@@ -35,6 +35,10 @@ class StartMenuScreen(BaseScreen):
         screen_w, screen_h = surface.get_size()
         center_x = screen_w // 2
         self._scaled_back = pygame.transform.scale(COLOR_BACKGROUND.convert_alpha(), self.surface.get_size())
+        self._decal_white_pos = (center_x - 700, screen_h // 2 - 200)
+        self._decal_black_pos = (center_x + 400, screen_h // 2 - 200)
+        self._wk_decal = pygame.transform.scale(pygame.image.load("assets/MenuPieces/KingWhiteDecal.png").convert_alpha(), (300, screen_h//2))
+        self._bk_decal = pygame.transform.scale(pygame.image.load("assets/MenuPieces/KingBlackDecal.png").convert_alpha(), (300, screen_h//2))
         # Title in upper quarter
         self._title_surface = self._title_font.render(
             "CHESS", True, COLOR_TEXT
@@ -84,6 +88,8 @@ class StartMenuScreen(BaseScreen):
 
     def draw(self) -> None:
         self.surface.blit(self._scaled_back, (0,0))
+        self.surface.blit(self._wk_decal, self._decal_white_pos)
+        self.surface.blit(self._bk_decal, self._decal_black_pos)
         self.surface.blit(self._title_surface, self._title_rect)
         for button in self._buttons:
             button.draw(self.surface)
