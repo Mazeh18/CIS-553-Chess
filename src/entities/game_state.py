@@ -2,6 +2,7 @@ from typing import Optional
 
 from src.entities.enums import Color, GameStatus
 from src.entities.board import Board
+from src.entities.position import Position
 from src.entities.time_control import TimeControl
 from src.entities.captured_pieces import CapturedPieces
 
@@ -16,6 +17,7 @@ class GameState:
         self.clock = None  # Stub: Clock will be added in a future phase
         self.time_control: TimeControl = time_control
         self.captured_pieces: CapturedPieces = CapturedPieces()
+        self.pending_promotion: Optional[Position] = None
 
     def is_game_over(self) -> bool:
         """Return True if the game has ended."""

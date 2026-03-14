@@ -105,7 +105,7 @@ The GameScreen is a composite boundary that delegates to specialized sub-compone
 
 ## Game Screen Sub-Components
 
-These boundary classes are composed within `GameScreen` and each renders a specific region of the game interface.
+These boundary components are composed within `GameScreen` and each renders a specific region of the game interface. Most are implemented as private draw methods within `GameScreen` (e.g., `_draw_move_history()`, `_draw_captured_pieces()`, `_draw_status()`). `PromotionPopup` is a standalone component in `src/components/promotion_popup.py`.
 
 | Boundary Class | Region | Reads From | Writes To |
 |---|---|---|---|

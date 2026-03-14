@@ -77,6 +77,30 @@ class Board:
         self.set_piece(move.start_pos, None)
         move.piece.has_moved = True
 
+        # En passant: remove the captured pawn
+        if move.is_en_passant:
+            captured_pawn_pos = Position(move.start_pos.row, move.end_pos.col)
+            self.set_piece(captured_pawn_pos, None)
+
+        # Castling: also move the rook
+        if move.is_castling:
+            if move.end_pos.col == 6:  # kingside
+                rook_from = Position(move.start_pos.row, 7)
+                rook_to = Position(move.start_pos.row, 5)
+            else:  # queenside
+                rook_from = Position(move.start_pos.row, 0)
+                rook_to = Position(move.start_pos.row, 3)
+            rook = self.get_piece(rook_from)
+            self.set_piece(rook_to, rook)
+            self.set_piece(rook_from, None)
+            if rook:
+                rook.has_moved = True
+
+        # Promotion: replace pawn with promoted piece
+        if move.promotion_piece is not None:
+            promoted = Piece(move.promotion_piece, move.piece.color, has_moved=True)
+            self.set_piece(move.end_pos, promoted)
+
         # Add move to history
         self.move_history.append(move)
 
@@ -92,8 +116,34 @@ class Board:
 
         # Restore piece to start position
         self.set_piece(move.start_pos, move.piece)
-        # Restore captured piece (or None) to end position
-        self.set_piece(move.end_pos, move.captured_piece)
+        move.piece.has_moved = move.had_moved
+
+        # Handle special move undo
+        if move.is_en_passant:
+            # Destination was empty; captured pawn was adjacent
+            self.set_piece(move.end_pos, None)
+            captured_pawn_pos = Position(move.start_pos.row, move.end_pos.col)
+            self.set_piece(captured_pawn_pos, move.captured_piece)
+        elif move.promotion_piece is not None:
+            # Remove promoted piece, restore captured piece (if any)
+            self.set_piece(move.end_pos, move.captured_piece)
+        else:
+            # Normal move: restore captured piece (or None) to end position
+            self.set_piece(move.end_pos, move.captured_piece)
+
+        # Castling: move rook back
+        if move.is_castling:
+            if move.end_pos.col == 6:  # kingside
+                rook_from = Position(move.start_pos.row, 7)
+                rook_to = Position(move.start_pos.row, 5)
+            else:  # queenside
+                rook_from = Position(move.start_pos.row, 0)
+                rook_to = Position(move.start_pos.row, 3)
+            rook = self.get_piece(rook_to)
+            self.set_piece(rook_from, rook)
+            self.set_piece(rook_to, None)
+            if rook:
+                rook.has_moved = False
 
         # Revert position history
         if self.position_history:
@@ -123,6 +173,26 @@ class Board:
                 if piece is not None:
                     parts.append(f"{row}{col}{piece.piece_type.name}{piece.color.name}")
         parts.append(self.current_turn.name)
+
+        # Castling rights
+        for row in (0, 7):
+            king = self.squares[row][4]
+            if king and king.piece_type == PieceType.KING and not king.has_moved:
+                parts.append(f"CK{row}")
+            for col in (0, 7):
+                rook = self.squares[row][col]
+                if rook and rook.piece_type == PieceType.ROOK and not rook.has_moved:
+                    parts.append(f"CR{row}{col}")
+
+        # En passant availability
+        if self.move_history:
+            last = self.move_history[-1]
+            if (
+                last.piece.piece_type == PieceType.PAWN
+                and abs(last.start_pos.row - last.end_pos.row) == 2
+            ):
+                parts.append(f"EP{last.end_pos.col}")
+
         return "|".join(parts)
 
     def find_king(self, color: Color) -> Position:
