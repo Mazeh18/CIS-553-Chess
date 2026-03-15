@@ -33,9 +33,7 @@ class StartMenuScreen(BaseScreen):
         center_x = screen_w // 2
 
         # Title in upper quarter
-        self._title_surface = self._title_font.render(
-            "CHESS", True, COLOR_TEXT
-        )
+        self._title_surface = self._title_font.render("CHESS", True, COLOR_TEXT)
         self._title_rect = self._title_surface.get_rect(
             centerx=center_x, centery=screen_h // 4
         )
