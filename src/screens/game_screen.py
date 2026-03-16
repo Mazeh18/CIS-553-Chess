@@ -259,15 +259,15 @@ class GameScreen(BaseScreen):
         if self._drag_state.origin:
             origin_surf = pygame.Surface((sq, sq), pygame.SRCALPHA)
             origin_surf.fill(COLOR_HIGHLIGHT_ORIGIN)
-            ox = self._board_x + self._drag_state.origin.col * sq
-            oy = self._board_y + self._drag_state.origin.row * sq
+            ox = self._board_x + self._drag_state.origin.col * sq + BOARD_BORDER_P
+            oy = self._board_y + self._drag_state.origin.row * sq + BOARD_BORDER_P
             self.surface.blit(origin_surf, (ox, oy))
 
         # Draw legal move indicators
         board = self._game_controller.game_state.board
         for move_pos in self._drag_state.legal_moves:
-            cx = self._board_x + move_pos.col * sq + sq // 2
-            cy = self._board_y + move_pos.row * sq + sq // 2
+            cx = self._board_x + move_pos.col * sq + sq // 2 + BOARD_BORDER_P
+            cy = self._board_y + move_pos.row * sq + sq // 2 + BOARD_BORDER_P
 
             target = board.get_piece(move_pos)
             if target is not None:
@@ -279,8 +279,8 @@ class GameScreen(BaseScreen):
                 self.surface.blit(
                     ring_surf,
                     (
-                        self._board_x + move_pos.col * sq,
-                        self._board_y + move_pos.row * sq,
+                        self._board_x + move_pos.col * sq + BOARD_BORDER_P, 
+                        self._board_y + move_pos.row * sq + BOARD_BORDER_P,
                     ),
                 )
             else:
@@ -290,8 +290,8 @@ class GameScreen(BaseScreen):
                 self.surface.blit(
                     dot_surf,
                     (
-                        self._board_x + move_pos.col * sq,
-                        self._board_y + move_pos.row * sq,
+                        self._board_x + move_pos.col * sq + BOARD_BORDER_P,
+                        self._board_y + move_pos.row * sq + BOARD_BORDER_P,
                     ),
                 )
 
