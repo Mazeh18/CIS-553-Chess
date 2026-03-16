@@ -23,3 +23,34 @@ class PieceType(Enum):
     BISHOP = auto()
     QUEEN = auto()
     KING = auto()
+
+
+class GameStatus(Enum):
+    ACTIVE = auto()
+    CHECK = auto()
+    CHECKMATE = auto()
+    STALEMATE = auto()
+    DRAW_INSUFFICIENT_MATERIAL = auto()
+    DRAW_THREEFOLD_REPETITION = auto()
+    DRAW_FIFTY_MOVE = auto()
+    RESIGNED = auto()
+    TIMEOUT = auto()
+
+    def is_game_over(self) -> bool:
+        return self in (
+            GameStatus.CHECKMATE,
+            GameStatus.STALEMATE,
+            GameStatus.DRAW_INSUFFICIENT_MATERIAL,
+            GameStatus.DRAW_THREEFOLD_REPETITION,
+            GameStatus.DRAW_FIFTY_MOVE,
+            GameStatus.RESIGNED,
+            GameStatus.TIMEOUT,
+        )
+
+    def is_draw(self) -> bool:
+        return self in (
+            GameStatus.STALEMATE,
+            GameStatus.DRAW_INSUFFICIENT_MATERIAL,
+            GameStatus.DRAW_THREEFOLD_REPETITION,
+            GameStatus.DRAW_FIFTY_MOVE,
+        )

@@ -147,6 +147,7 @@ class TimeSelectScreen(BaseScreen):
         def cb():
             if self._on_time_selected:
                 self._on_time_selected(minutes, increment)
+
         return cb
 
     def _show_custom(self) -> None:
@@ -215,6 +216,3 @@ class TimeSelectScreen(BaseScreen):
             for btn in self._preset_buttons:
                 btn.draw(self.surface)
             self._preset_back.draw(self.surface)
-            
-            
-            

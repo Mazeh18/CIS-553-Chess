@@ -56,3 +56,19 @@ python3 main.py
 ```
 
 Press **ESC** to exit fullscreen.
+
+## Code Formatting
+
+This project uses [Black](https://black.readthedocs.io/) for consistent code formatting. Black is included in `requirements.txt` and configured in `pyproject.toml`.
+
+Format all files before committing:
+
+```bash
+black .
+```
+
+Check formatting without modifying files:
+
+```bash
+black --check .
+```

@@ -40,9 +40,7 @@ class StartMenuScreen(BaseScreen):
         self._wk_decal = pygame.transform.scale(pygame.image.load("assets/MenuPieces/KingWhiteDecal.png").convert_alpha(), (300, screen_h//2))
         self._bk_decal = pygame.transform.scale(pygame.image.load("assets/MenuPieces/KingBlackDecal.png").convert_alpha(), (300, screen_h//2))
         # Title in upper quarter
-        self._title_surface = self._title_font.render(
-            "CHESS", True, COLOR_TEXT
-        )
+        self._title_surface = self._title_font.render("CHESS", True, COLOR_TEXT)
         self._title_rect = self._title_surface.get_rect(
             centerx=center_x, centery=screen_h // 4
         )
