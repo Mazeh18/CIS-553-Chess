@@ -40,12 +40,14 @@ PIECES = {
 PIECE_WHITE = {
     PieceType.KING: pygame.image.load("assets/Pieces/KingWhite.png"),
     PieceType.ROOK: pygame.image.load("assets/Pieces/RookWhite.png"),
+    PieceType.BISHOP: pygame.image.load("assets/Pieces/BishopWhite.png"),
     PieceType.PAWN: pygame.image.load("assets/Pieces/PawnWhite.png")
 }
 
 PIECE_BLACK = {
     PieceType.KING: pygame.image.load("assets/Pieces/KingBlack.png"),
     PieceType.ROOK: pygame.image.load("assets/Pieces/RookBlack.png"),
+    PieceType.BISHOP: pygame.image.load("assets/Pieces/BishopBlack.png"),
     PieceType.PAWN: pygame.image.load("assets/Pieces/PawnBlack.png")
 }
 
@@ -141,7 +143,7 @@ class GameScreen(BaseScreen):
         surfaces = {}
         for piece_type in PieceType:
             for color in Color:
-                if piece_type == PieceType.PAWN or piece_type == PieceType.ROOK or piece_type == PieceType.KING:
+                if piece_type == PieceType.PAWN or piece_type == PieceType.ROOK or piece_type == PieceType.KING or piece_type == PieceType.BISHOP:
                     piece = (
                         pygame.transform.scale(PIECE_WHITE[piece_type].convert_alpha(), (sq,sq))
                         if color == Color.WHITE
