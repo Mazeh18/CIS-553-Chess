@@ -16,18 +16,28 @@ class NotationController:
     """Stateless controller for generating standard algebraic notation."""
 
     def generate_notation(self, board: Board, move: Move) -> str:
-        """Produce the algebraic notation string for a move (e.g., 'Nf3', 'exd5')."""
+        """Produce the algebraic notation string for a move (e.g., 'Nf3', 'exd5', 'O-O')."""
+        # Castling notation
+        if move.is_castling:
+            if move.end_pos.col == 6:
+                return "O-O"
+            else:
+                return "O-O-O"
+
         piece_letter = PIECE_LETTERS[move.piece.piece_type]
         dest = move.end_pos.to_algebraic()
         capture = "x" if move.captured_piece is not None else ""
 
         if move.piece.piece_type == PieceType.PAWN:
             if move.captured_piece is not None:
-                # Pawn captures use file letter: e.g., exd5
                 file_letter = chr(ord("a") + move.start_pos.col)
-                return f"{file_letter}x{dest}"
+                base = f"{file_letter}x{dest}"
             else:
-                return dest
+                base = dest
+            # Promotion suffix
+            if move.promotion_piece is not None:
+                base += f"={PIECE_LETTERS[move.promotion_piece]}"
+            return base
         else:
             disambiguation = self.needs_disambiguation(board, move)
             return f"{piece_letter}{disambiguation}{capture}{dest}"

@@ -100,6 +100,7 @@ Represents a single move in the game.
 | Attribute | Type | Description |
 |-----------|------|-------------|
 | piece | Piece | The piece being moved. |
+| had_moved | bool | Whether the piece had already moved before this move. Captured automatically from `piece.has_moved` at construction time. Used by `undo_move()` to restore the correct `has_moved` state. |
 | start_pos | Position | The starting square. |
 | end_pos | Position | The destination square. |
 | captured_piece | Piece or None | The piece captured by this move, if any. |
@@ -138,6 +139,7 @@ Represents the overall state of the game.
 | clock | Clock | Reference to the Clock object. |
 | time_control | TimeControl | The time control selected for this game. |
 | captured_pieces | CapturedPieces | Reference to the CapturedPieces object (see Section 10). Tracks all captured pieces and point advantage. |
+| pending_promotion | Position or None | The board position of a pawn awaiting promotion selection. Set when a pawn reaches the back rank; cleared after the player selects a piece type via `attempt_promotion()`. `None` when no promotion is pending. |
 
 ---
 
