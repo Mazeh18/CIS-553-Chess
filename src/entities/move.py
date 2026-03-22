@@ -21,6 +21,7 @@ class Move:
         time_after_move: Optional[float] = None,
     ) -> None:
         self.piece = piece
+        self.had_moved = piece.has_moved
         self.start_pos = start_pos
         self.end_pos = end_pos
         self.captured_piece = captured_piece

@@ -74,6 +74,7 @@ classDiagram
 
     class Move {
         +Piece piece
+        +bool had_moved
         +Position start_pos
         +Position end_pos
         +Piece? captured_piece
@@ -156,6 +157,7 @@ classDiagram
         +Clock clock
         +TimeControl time_control
         +CapturedPieces captured_pieces
+        +Position? pending_promotion
         +is_game_over() bool
         +get_result_message() str
     }
@@ -238,7 +240,7 @@ classDiagram
 |-------|---------|
 | `Position` | Represents a square on the board (row 0-7, col 0-7). Supports algebraic notation conversion and equality/hashing for use in sets and dicts. |
 | `Piece` | Represents a single chess piece with its type, color, and move history. `value()` returns standard point value. `icon()` returns the visual representation of the piece. |
-| `Move` | Represents a single move with all metadata needed for undo (captured piece, special move flags, clock time). |
+| `Move` | Represents a single move with all metadata needed for undo (captured piece, special move flags, clock time, prior `has_moved` state). |
 | `TimeControl` | Represents a time control preset. `is_timed()` returns false when time_minutes is None. `get_starting_seconds()` converts minutes to seconds. |
 | `MoveHistoryEntry` | Display-oriented pairing of white and black moves for the move history panel. `from_move_list()` converts raw Move list to display entries. |
 | `MoveResult` | Returned by GameController after a move attempt. Indicates success, whether promotion is needed, and the resulting game status. |
