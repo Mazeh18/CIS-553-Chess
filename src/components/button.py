@@ -10,6 +10,7 @@ from src.constants import (
     COLOR_TEXT_DIM,
     FONT_NAME,
     FONT_SIZE_BUTTON,
+    FONT_SIZE_BUTTON_S,
 )
 
 
@@ -21,6 +22,7 @@ class Button:
         label: str,
         rect: pygame.Rect,
         on_click: Optional[Callable[[], None]] = None,
+        small_font: bool = False,
         enabled: bool = True,
     ) -> None:
         self.label = label
@@ -28,7 +30,7 @@ class Button:
         self.on_click = on_click
         self.enabled = enabled
         self.hovered = False
-        self._font = pygame.font.Font(FONT_NAME, FONT_SIZE_BUTTON)
+        self._font = pygame.font.Font(FONT_NAME, FONT_SIZE_BUTTON if not small_font else FONT_SIZE_BUTTON_S)
 
     def handle_event(self, event: pygame.event.Event) -> None:
         if not self.enabled:

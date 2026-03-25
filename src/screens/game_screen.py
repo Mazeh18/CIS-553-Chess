@@ -42,31 +42,20 @@ PIECES = {
 
 PIECE_WHITE = {
     PieceType.KING: pygame.image.load("assets/Pieces/KingWhite.png"),
+    PieceType.QUEEN: pygame.image.load("assets/Pieces/QueenWhite.png"),
     PieceType.ROOK: pygame.image.load("assets/Pieces/RookWhite.png"),
     PieceType.BISHOP: pygame.image.load("assets/Pieces/BishopWhite.png"),
+    PieceType.KNIGHT: pygame.image.load("assets/Pieces/KnightWhite.png"),
     PieceType.PAWN: pygame.image.load("assets/Pieces/PawnWhite.png")
 }
 
 PIECE_BLACK = {
     PieceType.KING: pygame.image.load("assets/Pieces/KingBlack.png"),
+    PieceType.QUEEN: pygame.image.load("assets/Pieces/QueenBlack.png"),
     PieceType.ROOK: pygame.image.load("assets/Pieces/RookBlack.png"),
     PieceType.BISHOP: pygame.image.load("assets/Pieces/BishopBlack.png"),
+    PieceType.KNIGHT: pygame.image.load("assets/Pieces/KnightBlack.png"),
     PieceType.PAWN: pygame.image.load("assets/Pieces/PawnBlack.png")
-}
-
-PIECE_SYMBOL = {
-    (PieceType.KING, Color.WHITE): "\u2654",
-    (PieceType.QUEEN, Color.WHITE): "\u2655",
-    (PieceType.ROOK, Color.WHITE): "\u2656",
-    (PieceType.BISHOP, Color.WHITE): "\u2657",
-    (PieceType.KNIGHT, Color.WHITE): "\u2658",
-    (PieceType.PAWN, Color.WHITE): "\u2659",
-    (PieceType.KING, Color.BLACK): "\u265a",
-    (PieceType.QUEEN, Color.BLACK): "\u265b",
-    (PieceType.ROOK, Color.BLACK): "\u265c",
-    (PieceType.BISHOP, Color.BLACK): "\u265d",
-    (PieceType.KNIGHT, Color.BLACK): "\u265e",
-    (PieceType.PAWN, Color.BLACK): "\u265f",
 }
 
 # Sort order for captured pieces display (highest value first)
@@ -83,13 +72,9 @@ COLOR_BLACK_PIECE = (30, 30, 30)
 COLOR_WHITE_PIECE_TEXT = (30, 30, 30)
 COLOR_BLACK_PIECE_TEXT = (220, 220, 220)
 
-FILE_LABELS = "abcdefgh"
-RANK_LABELS = "87654321"
-
 # Move history panel
 PANEL_PADDING = 10
 HISTORY_ROW_HEIGHT = 24
-
 
 class GameScreen(BaseScreen):
     """Game screen with interactive drag-and-drop chess."""
@@ -106,7 +91,7 @@ class GameScreen(BaseScreen):
         screen_w, screen_h = surface.get_size()
 
         # Board sizing: fit to ~75% of screen height, shifted left for side panel
-        board_margin = 200
+        board_margin = 150
         self._square_size = (screen_h - board_margin * 2) // 8
         self._board_size = self._square_size * 8
         self._border_size = self._board_size + (BOARD_BORDER_P * 2)
@@ -115,13 +100,11 @@ class GameScreen(BaseScreen):
         self._scaled_back = pygame.transform.scale(COLOR_BACKGROUND.convert_alpha(), self.surface.get_size())
 
         # Position board left of center to make room for history panel
-        panel_width = 240
+        panel_width = 200
         total_width = self._board_size + 20 + panel_width
         left_offset = (screen_w - total_width) // 2
-        self._board_x = left_offset
-#         # Position board center-left
-    #    self._board_x = 100
-        self._board_y = (screen_h - self._board_size) // 2
+        self._board_x = left_offset - 175
+        self._board_y = ((screen_h - (self._board_size + BOARD_BORDER_P)) // 2) - 50
 
         # Move history panel region (right of board)
         self._panel_x = self._board_x + self._board_size + 20
@@ -140,18 +123,40 @@ class GameScreen(BaseScreen):
         self._captured_font = pygame.font.Font(None, self._captured_font_size)
         self._advantage_font = pygame.font.Font(FONT_NAME, FONT_SIZE_SMALL)
 
-        # Back button (top-left corner)
+        # New game button (bottom right)
         self._back_button = Button(
             label="Main Menu",
-            rect=pygame.Rect(20, 20, BUTTON_WIDTH, BUTTON_HEIGHT),
+            rect=pygame.Rect(
+                self._panel_x + BOARD_BORDER_P + 530, 
+                self._panel_y + self._panel_h + 50, 
+                BUTTON_WIDTH - 35, 
+                BUTTON_HEIGHT + 10),
             on_click=on_back,
+            small_font=True
+        )
+
+        # Resign
+        self._resign_button = Button(
+            label="Resign",
+            rect=pygame.Rect(
+                self._panel_x + BOARD_BORDER_P + 300, 
+                self._panel_y + self._panel_h + 50, 
+                BUTTON_WIDTH - 40, 
+                BUTTON_HEIGHT + 10),
+            on_click=self._on_resign,
+            small_font=True
         )
 
         # Undo button (below back button)
         self._undo_button = Button(
             label="Undo",
-            rect=pygame.Rect(20, 20 + BUTTON_HEIGHT + 10, BUTTON_WIDTH, BUTTON_HEIGHT),
+            rect=pygame.Rect(
+                self._panel_x + BOARD_BORDER_P + 75, 
+                self._panel_y + self._panel_h + 50, 
+                BUTTON_WIDTH - 40, 
+                BUTTON_HEIGHT + 10),
             on_click=self._on_undo,
+            small_font=True
         )
 
         # Pre-render static board surface (squares + labels)
@@ -200,47 +205,16 @@ class GameScreen(BaseScreen):
     def _render_pieces(self) -> dict:
         """Pre-render placeholder piece surfaces (circle + letter)."""
         sq = self._square_size
-        radius = int(sq * 0.38)
         surfaces = {}
         for piece_type in PieceType:
             for color in Color:
-                if piece_type == PieceType.PAWN or piece_type == PieceType.ROOK or piece_type == PieceType.KING or piece_type == PieceType.BISHOP:
-                    piece = (
-                        pygame.transform.scale(PIECE_WHITE[piece_type].convert_alpha(), (sq,sq))
-                        if color == Color.WHITE
-                        else pygame.transform.scale(PIECE_BLACK[piece_type].convert_alpha(), (sq,sq))
-                    )
-                    piece_surf = pygame.Surface((sq,sq), pygame.SRCALPHA)
-                    piece_surf.blit(piece, piece_surf.get_rect(center=(sq // 2, sq // 2)))
-                else:
-                    piece_surf = pygame.Surface((sq, sq), pygame.SRCALPHA)
-
-                    # Circle
-                    circle_color = (
-                        COLOR_WHITE_PIECE if color == Color.WHITE else COLOR_BLACK_PIECE
-                    )
-                    pygame.draw.circle(
-                        piece_surf, circle_color, (sq // 2, sq // 2), radius
-                    )
-                    # Border on circle for contrast
-                    border_color = (
-                        (180, 180, 180) if color == Color.WHITE else (80, 80, 80)
-                    )
-                    pygame.draw.circle(
-                        piece_surf, border_color, (sq // 2, sq // 2), radius, 2
-                    )
-
-                    # Letter
-                    text_color = (
-                        COLOR_WHITE_PIECE_TEXT
-                        if color == Color.WHITE
-                        else COLOR_BLACK_PIECE_TEXT
-                    )
-                    letter_surf = self._piece_font.render(
-                        PIECES[piece_type], True, text_color
-                    )
-                    letter_rect = letter_surf.get_rect(center=(sq // 2, sq // 2))
-                    piece_surf.blit(letter_surf, letter_rect)
+                piece = (
+                    pygame.transform.scale(PIECE_WHITE[piece_type].convert_alpha(), (sq,sq))
+                    if color == Color.WHITE
+                    else pygame.transform.scale(PIECE_BLACK[piece_type].convert_alpha(), (sq,sq))
+                )
+                piece_surf = pygame.Surface((sq,sq), pygame.SRCALPHA)
+                piece_surf.blit(piece, piece_surf.get_rect(center=(sq // 2, sq // 2)))
         
                 surfaces[(piece_type, color)] = piece_surf
 
@@ -250,6 +224,10 @@ class GameScreen(BaseScreen):
         """Callback when the Undo button is clicked."""
         self._game_controller.undo_last_move()
 
+    def _on_resign(self) -> None:
+        """Callback when Resign button is pressed. TODO"""
+        self._game_controller.resign(self._game_controller.game_state.board.current_turn)
+    
     def _on_promotion_select(self, piece_type: PieceType) -> None:
         """Callback when a promotion piece is selected."""
         self._game_controller.attempt_promotion(piece_type)
@@ -257,6 +235,7 @@ class GameScreen(BaseScreen):
 
     def handle_event(self, event: pygame.event.Event) -> None:
         self._back_button.handle_event(event)
+        self._resign_button.handle_event(event)
         self._undo_button.handle_event(event)
 
         # Route events to promotion popup if active (modal)
@@ -361,6 +340,7 @@ class GameScreen(BaseScreen):
 
         # Buttons
         self._back_button.draw(self.surface)
+        self._resign_button.draw(self.surface)
 
         # Undo button: enabled only when moves exist and game is active
         game_state = self._game_controller.game_state
@@ -461,7 +441,7 @@ class GameScreen(BaseScreen):
         spacing = self._captured_font_size
         cx = x
         for piece in sorted_pieces:
-            letter = PIECE_LETTER.get(piece.piece_type, "?")
+            letter = PIECES.get(piece.piece_type, "?")
             surf = self._captured_font.render(letter, True, COLOR_TEXT_DIM)
             self.surface.blit(surf, (cx, y))
             cx += spacing
@@ -474,9 +454,9 @@ class GameScreen(BaseScreen):
 
     def _draw_move_history(self) -> None:
         """Draw the move history panel to the right of the board."""
-        px = self._panel_x
+        px = self._panel_x + BOARD_BORDER_P + 375
         py = self._panel_y
-        pw = self._panel_w
+        pw = self._panel_w + 150
         ph = self._panel_h
 
         # Panel background
@@ -566,8 +546,8 @@ class GameScreen(BaseScreen):
             text = f"{turn_name}'s turn"
 
         status_surf = self._status_font.render(text, True, COLOR_TEXT)
-        status_y = self._board_y + self._board_size + 35
+        status_y = self._board_y + self._board_size + 80 + BOARD_BORDER_P
         status_rect = status_surf.get_rect(
-            centerx=self._board_x + self._board_size // 2, top=status_y
+            centerx=(self._board_x + self._board_size // 2) + BOARD_BORDER_P, top=status_y
         )
         self.surface.blit(status_surf, status_rect)

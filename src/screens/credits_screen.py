@@ -46,6 +46,12 @@ class CreditsScreen(BaseScreen):
         # Background
         self._scaled_back = pygame.transform.scale(COLOR_BACKGROUND.convert_alpha(), self.surface.get_size())
         
+        # Queen Decals
+        self._decal_white_pos = (center_x - 700, screen_h // 2 - 200)
+        self._decal_black_pos = (center_x + 400, screen_h // 2 - 200)
+        self._wq_decal = pygame.transform.scale(pygame.image.load("assets/MenuPieces/QWhiteDecal.png").convert_alpha(), (300, screen_h//2))
+        self._bq_decal = pygame.transform.scale(pygame.image.load("assets/MenuPieces/QBlackDecal.png").convert_alpha(), (300, screen_h//2))
+
         # Title
         self._title_surface = heading_font.render("Credits", True, COLOR_TEXT)
         self._title_rect = self._title_surface.get_rect(
@@ -87,6 +93,8 @@ class CreditsScreen(BaseScreen):
 
     def draw(self) -> None:
         self.surface.blit(self._scaled_back, (0,0))
+        self.surface.blit(self._wq_decal, self._decal_white_pos)
+        self.surface.blit(self._bq_decal, self._decal_black_pos)
         self.surface.blit(self._title_surface, self._title_rect)
         self.surface.blit(self._dev_surface, self._dev_rect)
         for surf, rect in self._author_surfaces:
