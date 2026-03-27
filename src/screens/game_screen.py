@@ -112,6 +112,9 @@ class GameScreen(BaseScreen):
         self._panel_w = panel_width
         self._panel_h = self._board_size
 
+        # Piece Collection Trays (3/4 size of board height)
+        self._pc_tray = pygame.transform.scale(pygame.image.load("assets/PieceCollection.png"),(self._square_size*2, self._border_size * 0.75))
+
         # Captured pieces display regions
         self._captured_font_size = max(16, self._square_size // 4)
 
@@ -121,14 +124,14 @@ class GameScreen(BaseScreen):
         self._status_font = pygame.font.Font(FONT_NAME, FONT_SIZE_BODY)
         self._history_font = pygame.font.Font(FONT_NAME, FONT_SIZE_SMALL)
         self._captured_font = pygame.font.Font(None, self._captured_font_size)
-        self._advantage_font = pygame.font.Font(FONT_NAME, FONT_SIZE_SMALL)
+        self._advantage_font = pygame.font.Font(FONT_NAME, int(FONT_SIZE_BODY * 0.75))
 
         # New game button (bottom right)
         self._back_button = Button(
             label="Main Menu",
             rect=pygame.Rect(
                 self._panel_x + BOARD_BORDER_P + 530, 
-                self._panel_y + self._panel_h + 50, 
+                self._panel_y + self._panel_h + 125, 
                 BUTTON_WIDTH - 35, 
                 BUTTON_HEIGHT + 10),
             on_click=on_back,
@@ -140,7 +143,7 @@ class GameScreen(BaseScreen):
             label="Resign",
             rect=pygame.Rect(
                 self._panel_x + BOARD_BORDER_P + 300, 
-                self._panel_y + self._panel_h + 50, 
+                self._panel_y + self._panel_h + 125, 
                 BUTTON_WIDTH - 40, 
                 BUTTON_HEIGHT + 10),
             on_click=self._on_resign,
@@ -152,7 +155,7 @@ class GameScreen(BaseScreen):
             label="Undo",
             rect=pygame.Rect(
                 self._panel_x + BOARD_BORDER_P + 75, 
-                self._panel_y + self._panel_h + 50, 
+                self._panel_y + self._panel_h + 125, 
                 BUTTON_WIDTH - 40, 
                 BUTTON_HEIGHT + 10),
             on_click=self._on_undo,
@@ -402,21 +405,27 @@ class GameScreen(BaseScreen):
         captured = game_state.captured_pieces
         advantage = captured.get_point_advantage()
 
-        # Black's captured pieces (pieces White captured) — shown above the board
+        # Draw collection tray
+        # White tray
+        self.surface.blit(self._pc_tray.convert_alpha(), (self._board_x - 200, self._board_y + 200))
+        # Black tray
+        self.surface.blit(self._pc_tray.convert_alpha(), (self._board_x + 5 + self._border_size, self._board_y + 200))
+
+        # Pieces White has captured from Black
         self._draw_captured_row(
             captured.white_captured,
             Color.BLACK,
-            self._board_x,
-            self._board_y - 30,
+            self._board_x - 150,
+            self._board_y + 135,
             advantage if advantage > 0 else 0,
         )
 
-        # White's captured pieces (pieces Black captured) — shown below the board
+        # Pieces Black has captured from White
         self._draw_captured_row(
             captured.black_captured,
             Color.WHITE,
-            self._board_x,
-            self._board_y + self._board_size + 8,
+            self._board_x + self._border_size + 50,
+            self._board_y + 135,
             -advantage if advantage < 0 else 0,
         )
 
@@ -437,20 +446,33 @@ class GameScreen(BaseScreen):
             pieces, key=lambda p: PIECE_SORT_ORDER.get(p.piece_type, 5)
         )
 
+        # get x and y of piece if more than 8 wrap around,
+
         # Render each captured piece as a letter
-        spacing = self._captured_font_size
-        cx = x
+        spacing = self._square_size - 5
+        n_pieces = 0
+        row = 0
         for piece in sorted_pieces:
-            letter = PIECES.get(piece.piece_type, "?")
-            surf = self._captured_font.render(letter, True, COLOR_TEXT_DIM)
-            self.surface.blit(surf, (cx, y))
-            cx += spacing
+            if captured_color == Color.BLACK:
+                x_piece = self._board_x - 180 + (row * spacing - 10)
+                y_piece = self._board_y + 225 + (spacing * n_pieces)
+                piece = pygame.transform.scale(PIECE_BLACK.get(piece.piece_type, "?").convert_alpha(), (self._square_size - 20, self._square_size - 20))
+            else:
+                x_piece = self._board_x + 20 + self._border_size + (row * spacing - 10)
+                y_piece = self._board_y + 225 + (spacing * n_pieces)
+                piece = pygame.transform.scale(PIECE_WHITE.get(piece.piece_type, "?").convert_alpha(), (self._square_size - 20, self._square_size - 20))
+            self.surface.blit(piece, (x_piece, y_piece))
+            n_pieces += 1
+            if n_pieces >= 7:
+                n_pieces = 0
+                row = 1
+                
 
         # Point advantage
         if advantage > 0:
             adv_text = f"+{advantage}"
-            adv_surf = self._advantage_font.render(adv_text, True, COLOR_TEXT_DIM)
-            self.surface.blit(adv_surf, (cx + 4, y + 2))
+            adv_surf = self._advantage_font.render(adv_text, True, (255,255,255) if captured_color == Color.BLACK else (0,0,0))
+            self.surface.blit(adv_surf, (x,y))
 
     def _draw_move_history(self) -> None:
         """Draw the move history panel to the right of the board."""
@@ -480,7 +502,7 @@ class GameScreen(BaseScreen):
             move_pairs.append((move_num, white_move, black_move))
 
         if not move_pairs:
-            empty_surf = self._history_font.render("No moves yet", True, COLOR_TEXT_DIM)
+            empty_surf = self._history_font.render("No moves yet", True, COLOR_TEXT)
             self.surface.blit(empty_surf, (px + PANEL_PADDING, py + PANEL_PADDING + 30))
             return
 
@@ -519,7 +541,7 @@ class GameScreen(BaseScreen):
                 self.surface.blit(bg_surf, row_bg.topleft)
 
             # Move number
-            num_surf = self._history_font.render(f"{num}.", True, COLOR_TEXT_DIM)
+            num_surf = self._history_font.render(f"{num}.", True, COLOR_TEXT)
             self.surface.blit(num_surf, (col_num_x, row_y + 2))
 
             # White's move
