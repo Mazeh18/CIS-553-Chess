@@ -16,9 +16,9 @@ from src.constants import (
     BOARD_BORDER,
     BOARD_BORDER_P,
     COLOR_TEXT,
-    COLOR_TEXT_DIM,
     COLOR_HIGHLIGHT_ORIGIN,
     COLOR_PANEL,
+    COLOR_BUTTON,
     FONT_NAME,
     FONT_SIZE_SMALL,
     FONT_SIZE_BODY,
@@ -84,10 +84,11 @@ class GameScreen(BaseScreen):
         surface: pygame.Surface,
         game_controller: GameController,
         on_back: Optional[Callable[[], None]] = None,
+        on_new: Optional[Callable[[], None]] = None,
     ) -> None:
         super().__init__(surface)
         self._game_controller = game_controller
-
+        self._on_back = on_back
         screen_w, screen_h = surface.get_size()
 
         # Board sizing: fit to ~75% of screen height, shifted left for side panel
@@ -98,6 +99,11 @@ class GameScreen(BaseScreen):
 
         # Background
         self._scaled_back = pygame.transform.scale(COLOR_BACKGROUND.convert_alpha(), self.surface.get_size())
+        
+        # End Game Screen
+        self._game_over_popup = pygame.Surface((screen_w - 200, 150), pygame.SRCALPHA)
+        self._game_over_rect = pygame.Rect(0, 0, screen_w - 200, 125)
+        self._game_over_pos = (100, screen_h-125)
 
         # Position board left of center to make room for history panel
         panel_width = 200
@@ -122,11 +128,11 @@ class GameScreen(BaseScreen):
         self._label_font = pygame.font.Font(FONT_NAME, FONT_SIZE_SMALL)
         self._piece_font = pygame.font.Font(FONT_NAME, int(self._square_size * 0.45))
         self._status_font = pygame.font.Font(FONT_NAME, FONT_SIZE_BODY)
-        self._history_font = pygame.font.Font(FONT_NAME, FONT_SIZE_SMALL)
+        self._history_font = pygame.font.Font(FONT_NAME, FONT_SIZE_SMALL - 5)
         self._captured_font = pygame.font.Font(None, self._captured_font_size)
         self._advantage_font = pygame.font.Font(FONT_NAME, int(FONT_SIZE_BODY * 0.75))
 
-        # New game button (bottom right)
+        # Main Menu button (bottom right)
         self._back_button = Button(
             label="Main Menu",
             rect=pygame.Rect(
@@ -137,6 +143,19 @@ class GameScreen(BaseScreen):
             on_click=on_back,
             small_font=True
         )
+
+        # New Game button (bottom right)
+        self._new_game_button = Button(
+            label="New Game",
+            rect=pygame.Rect(
+                screen_w - 600, 
+                screen_h - 100, 
+                BUTTON_WIDTH - 35, 
+                BUTTON_HEIGHT + 10),
+            on_click=on_new,
+            small_font=True,
+            enabled=False
+        )    
 
         # Resign
         self._resign_button = Button(
@@ -228,7 +247,7 @@ class GameScreen(BaseScreen):
         self._game_controller.undo_last_move()
 
     def _on_resign(self) -> None:
-        """Callback when Resign button is pressed. TODO"""
+        """Callback when Resign button is pressed."""
         self._game_controller.resign(self._game_controller.game_state.board.current_turn)
     
     def _on_promotion_select(self, piece_type: PieceType) -> None:
@@ -240,6 +259,7 @@ class GameScreen(BaseScreen):
         self._back_button.handle_event(event)
         self._resign_button.handle_event(event)
         self._undo_button.handle_event(event)
+        self._new_game_button.handle_event(event)
 
         # Route events to promotion popup if active (modal)
         if self._promotion_popup is not None:
@@ -332,24 +352,42 @@ class GameScreen(BaseScreen):
         self._draw_captured_pieces()
 
         # Move history panel
-        self._draw_move_history()
-
-        # Turn indicator / status text
-        self._draw_status()
+        self._draw_move_history()        
 
         # Promotion popup (modal overlay)
         if self._promotion_popup is not None:
             self._promotion_popup.draw(self.surface)
 
-        # Buttons
-        self._back_button.draw(self.surface)
-        self._resign_button.draw(self.surface)
+        if not self._game_controller.game_state.is_game_over():
+            # Buttons
+            self._back_button.draw(self.surface)
+            self._resign_button.draw(self.surface)
 
-        # Undo button: enabled only when moves exist and game is active
-        game_state = self._game_controller.game_state
-        has_moves = len(game_state.board.move_history) > 0
-        self._undo_button.enabled = has_moves and not game_state.is_game_over()
-        self._undo_button.draw(self.surface)
+            # Undo button: enabled only when moves exist and game is active
+            game_state = self._game_controller.game_state
+            has_moves = len(game_state.board.move_history) > 0
+            self._undo_button.enabled = has_moves and not game_state.is_game_over()
+            self._undo_button.draw(self.surface)
+            
+            # Turn indicator / status text
+            self._draw_status()
+        else:
+            pygame.draw.rect(self._game_over_popup, COLOR_PANEL, self._game_over_rect, border_radius=8)
+            pygame.draw.rect(
+                self._game_over_popup, (86, 49, 29), self._game_over_rect, width=10, border_radius=8
+            )
+            self.surface.blit(self._game_over_popup, self._game_over_pos)
+            self._back_button.rect = pygame.Rect(
+                                        self._new_game_button.rect.x + BUTTON_WIDTH - 20, 
+                                        self._new_game_button.rect.y, 
+                                        BUTTON_WIDTH - 35, 
+                                        BUTTON_HEIGHT + 10
+                                    )
+            self._new_game_button.enabled = True
+            self._new_game_button.draw(self.surface)
+            self._back_button.draw(self.surface)            
+            self._draw_status()
+        
 
     def _draw_highlights(self) -> None:
         """Draw highlights on the origin square and legal move destinations."""
@@ -485,7 +523,7 @@ class GameScreen(BaseScreen):
         panel_rect = pygame.Rect(px, py, pw, ph)
         pygame.draw.rect(self.surface, COLOR_PANEL, panel_rect, border_radius=8)
         pygame.draw.rect(
-            self.surface, (80, 78, 75), panel_rect, width=1, border_radius=8
+            self.surface, (86, 49, 29), panel_rect, width=3, border_radius=8
         )
 
         # Header
@@ -546,19 +584,25 @@ class GameScreen(BaseScreen):
 
             # White's move
             white_surf = self._history_font.render(white, True, COLOR_TEXT)
-            self.surface.blit(white_surf, (col_white_x, row_y + 2))
+            self.surface.blit(white_surf, (col_white_x + 7, row_y + 2))
 
             # Black's move
             if black:
                 black_surf = self._history_font.render(black, True, COLOR_TEXT)
-                self.surface.blit(black_surf, (col_black_x, row_y + 2))
+                self.surface.blit(black_surf, (col_black_x + 7, row_y + 2))
 
         self.surface.set_clip(prev_clip)
 
     def _draw_status(self) -> None:
         """Draw turn indicator and game status text below the board."""
         game_state = self._game_controller.game_state
+        status_x = self._board_x + self._board_size // 2
+        status_y = self._board_y + self._board_size + 80 + BOARD_BORDER_P
+
         if game_state.is_game_over():
+            # Change status location
+            status_y = self._board_y + self._board_size + 70 + BOARD_BORDER_P
+            status_x = self._board_x + self._board_size // 2 - 100
             text = game_state.get_result_message()
         elif game_state.status == GameStatus.CHECK:
             turn_name = game_state.board.current_turn.name.capitalize()
@@ -566,10 +610,10 @@ class GameScreen(BaseScreen):
         else:
             turn_name = game_state.board.current_turn.name.capitalize()
             text = f"{turn_name}'s turn"
-
+        
         status_surf = self._status_font.render(text, True, COLOR_TEXT)
-        status_y = self._board_y + self._board_size + 80 + BOARD_BORDER_P
         status_rect = status_surf.get_rect(
-            centerx=(self._board_x + self._board_size // 2) + BOARD_BORDER_P, top=status_y
+            centerx=(status_x) + BOARD_BORDER_P, top=status_y
         )
+        
         self.surface.blit(status_surf, status_rect)

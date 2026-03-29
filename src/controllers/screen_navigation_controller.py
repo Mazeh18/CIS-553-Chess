@@ -54,6 +54,7 @@ class ScreenNavigationController:
             surface=self._surface,
             game_controller=self._game_controller,
             on_back=self.navigate_to_start_menu,
+            on_new=self.navigate_to_time_select,
         )
 
     def handle_exit(self) -> None:
