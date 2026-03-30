@@ -413,7 +413,7 @@ class GameScreen(BaseScreen):
                 ring_surf = pygame.Surface((sq, sq), pygame.SRCALPHA)
                 pygame.draw.circle(
                     ring_surf,
-                    (0, 0, 0, 60),
+                    (232, 64, 64, 150),
                     (sq // 2, sq // 2),
                     sq // 2 - 2,
                     4,
@@ -428,7 +428,7 @@ class GameScreen(BaseScreen):
             else:
                 # Normal move: small dot
                 dot_surf = pygame.Surface((sq, sq), pygame.SRCALPHA)
-                pygame.draw.circle(dot_surf, (0, 0, 0, 60), (sq // 2, sq // 2), sq // 6)
+                pygame.draw.circle(dot_surf, (59, 179, 232, 125), (sq // 2, sq // 2), sq // 6)
                 self.surface.blit(
                     dot_surf,
                     (
