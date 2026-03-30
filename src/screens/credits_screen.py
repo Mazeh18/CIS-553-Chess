@@ -14,6 +14,8 @@ from src.constants import (
     FONT_SIZE_BUTTON,
     BUTTON_WIDTH,
     BUTTON_HEIGHT,
+    BASE_HEIGHT,
+    BASE_WIDTH
 )
 
 AUTHORS = [
@@ -36,7 +38,8 @@ class CreditsScreen(BaseScreen):
     ) -> None:
         super().__init__(surface)
 
-        screen_w, screen_h = surface.get_size()
+        self._virtual_surface = pygame.Surface((BASE_WIDTH, BASE_HEIGHT))
+        screen_w, screen_h = self._virtual_surface.get_size()
         center_x = screen_w // 2
 
         heading_font = pygame.font.Font(FONT_NAME, FONT_SIZE_TITLE)
@@ -86,17 +89,28 @@ class CreditsScreen(BaseScreen):
         )
 
     def handle_event(self, event: pygame.event.Event) -> None:
+        sw,sh = self.surface.get_size()
+        scale = min(sw / BASE_WIDTH, sh / BASE_HEIGHT)
+        offset_x = (sw - int(BASE_WIDTH * scale))
+        offset_y = (sh - int(BASE_HEIGHT * scale))
+        x, y = event.pos
+        virtual_x = (x - offset_x) / scale
+        virtual_y = (y - offset_y) / scale
+        event.pos = (virtual_x, virtual_y)
         self._back_button.handle_event(event)
 
     def update(self, dt: float) -> None:
         pass
 
     def draw(self) -> None:
-        self.surface.blit(self._scaled_back, (0,0))
-        self.surface.blit(self._wq_decal, self._decal_white_pos)
-        self.surface.blit(self._bq_decal, self._decal_black_pos)
-        self.surface.blit(self._title_surface, self._title_rect)
-        self.surface.blit(self._dev_surface, self._dev_rect)
+        self._virtual_surface.blit(self._scaled_back, (0,0))
+        self._virtual_surface.blit(self._wq_decal, self._decal_white_pos)
+        self._virtual_surface.blit(self._bq_decal, self._decal_black_pos)
+        self._virtual_surface.blit(self._title_surface, self._title_rect)
+        self._virtual_surface.blit(self._dev_surface, self._dev_rect)
         for surf, rect in self._author_surfaces:
-            self.surface.blit(surf, rect)
-        self._back_button.draw(self.surface)
+            self._virtual_surface.blit(surf, rect)
+        self._back_button.draw(self._virtual_surface)
+
+        scaled_virtual = pygame.transform.smoothscale(self._virtual_surface, self.surface.get_size())
+        self.surface.blit(scaled_virtual, (0,0))
