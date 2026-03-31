@@ -78,7 +78,7 @@ class InputController:
         col = (px - self._board_x) // self._square_size
         row = (py - self._board_y) // self._square_size
 
-        pos = Position(row, col)
+        pos = Position(int(row), int(col))
         if pos.is_valid():
             return pos
         return None
