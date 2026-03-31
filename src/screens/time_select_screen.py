@@ -180,41 +180,17 @@ class TimeSelectScreen(BaseScreen):
     # ── Screen interface ──────────────────────────────────────
 
     def handle_event(self, event: pygame.event.Event) -> None:
-        if event.type in (pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.MOUSEMOTION):
-            # Scale Mouse input to virtual screen:
-            sw,sh = self.surface.get_size()
-            scale = min(sw / BASE_WIDTH, sh / BASE_HEIGHT)
-            offset_x = (sw - int(BASE_WIDTH * scale)) // 2
-            offset_y = (sh - int(BASE_HEIGHT * scale)) // 2
-            x, y = event.pos
-            virtual_x = (x - offset_x) / scale
-            virtual_y = (y - offset_y) / scale
-            virtual_event = pygame.event.Event(
-                event.type,
-                pos=(virtual_x, virtual_y),
-                button=getattr(event,"button",None),
-                rel=getattr(event, "rel", (0,0)),
-                buttons=getattr(event, "buttons", (0,0,0))
-            )
-            if self._showing_custom:
-                self._minutes_input.handle_event(virtual_event)
-                self._increment_input.handle_event(virtual_event)
-                self._custom_start.handle_event(virtual_event)
-                self._custom_back.handle_event(virtual_event)
-            else:
-                for btn in self._preset_buttons:
-                    btn.handle_event(virtual_event)
-                self._preset_back.handle_event(virtual_event)
+        virtual_event = self.create_virtual_event(event)
+        if self._showing_custom:
+            self._minutes_input.handle_event(virtual_event)
+            self._increment_input.handle_event(virtual_event)
+            self._custom_start.handle_event(virtual_event)
+            self._custom_back.handle_event(virtual_event)
         else:
-            if self._showing_custom:
-                self._minutes_input.handle_event(event)
-                self._increment_input.handle_event(event)
-                self._custom_start.handle_event(event)
-                self._custom_back.handle_event(event)
-            else:
-                for btn in self._preset_buttons:
-                    btn.handle_event(event)
-                self._preset_back.handle_event(event)
+            for btn in self._preset_buttons:
+                btn.handle_event(virtual_event)
+            self._preset_back.handle_event(virtual_event)
+            
 
     def update(self, dt: float) -> None:
         if self._showing_custom:

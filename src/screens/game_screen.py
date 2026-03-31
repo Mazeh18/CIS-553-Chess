@@ -263,23 +263,7 @@ class GameScreen(BaseScreen):
         self._promotion_popup = None
 
     def handle_event(self, event: pygame.event.Event) -> None:
-        virtual_event = event
-        if event.type in (pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.MOUSEMOTION):
-            sw,sh = self.surface.get_size()
-            scale = min(sw / BASE_WIDTH, sh / BASE_HEIGHT)
-            offset_x = (sw - int(BASE_WIDTH * scale)) // 2
-            offset_y = (sh - int(BASE_HEIGHT * scale)) // 2
-            x, y = event.pos
-            virtual_x = (x - offset_x) / scale
-            virtual_y = (y - offset_y) / scale
-            # More reliable to create a new event based off previous event
-            virtual_event = pygame.event.Event(
-                    event.type,
-                    pos=(virtual_x, virtual_y),
-                    button=getattr(event,"button",None),
-                    rel=getattr(event, "rel", (0,0)),
-                    buttons=getattr(event, "buttons", (0,0,0))
-                )
+        virtual_event = self.create_virtual_event(event)
         self._back_button.handle_event(virtual_event)
         self._resign_button.handle_event(virtual_event)
         self._undo_button.handle_event(virtual_event)
