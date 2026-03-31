@@ -46,7 +46,7 @@ class CreditsScreen(BaseScreen):
         body_font = pygame.font.Font(FONT_NAME, FONT_SIZE_BODY)
         
         # Background
-        self._scaled_back = pygame.transform.scale(COLOR_BACKGROUND.convert_alpha(), self.surface.get_size())
+        self._scaled_back = pygame.transform.scale(COLOR_BACKGROUND.convert_alpha(), self._virtual_surface.get_size())
         
         # Queen Decals
         self._decal_white_pos = (center_x - 700, screen_h // 2 - 200)
