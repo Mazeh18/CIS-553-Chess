@@ -284,6 +284,17 @@ class GameScreen(BaseScreen):
         # Board background
         self.surface.blit(self._board_surface, (self._board_x, self._board_y))
 
+        # draw a clock countdown
+        font_times = pygame.font.Font(None, 50)
+        text_black = font_times.render('Black', False, 'white')
+        text_black_time = font_times.render(self._game_controller.game_state.clock.format_time(Color.BLACK), False, 'white')
+        text_white = font_times.render('White', False, 'white')
+        text_white_time = font_times.render(self._game_controller.game_state.clock.format_time(Color.WHITE), False, 'white')
+        self.surface.blit(text_black, (100, 450))
+        self.surface.blit(text_black_time, (100, 500))
+        self.surface.blit(text_white, (100, 550))
+        self.surface.blit(text_white_time, (100, 600))
+
         # Highlight origin square and legal moves if dragging
         if self._drag_state.is_dragging:
             self._draw_highlights()

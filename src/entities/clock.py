@@ -47,21 +47,23 @@ class Clock:
 
     def format_time(self, color: Color) -> str:
         """Return a formatted display string"""
-        if color == Color.WHITE:
-            minutes = int(self.white_time // 60)
-            seconds = int(self.white_time % 60)
-        else:
-            minutes = int(self.black_time // 60)
-            seconds = int(self.black_time % 60)
+        if self.enabled:
+            if color == Color.WHITE:
+                minutes = int(self.white_time // 60)
+                seconds = int(self.white_time % 60)
+            else:
+                minutes = int(self.black_time // 60)
+                seconds = int(self.black_time % 60)
 
-        if minutes <= 9:
-            str_min = f"0{minutes}"
-        else:
-            str_min = str(minutes)
+            if minutes <= 9:
+                str_min = f"0{minutes}"
+            else:
+                str_min = str(minutes)
 
-        if seconds <= 9:
-            str_sec = f"0{seconds}"
-        else:
-            str_sec = str(seconds)
+            if seconds <= 9:
+                str_sec = f"0{seconds}"
+            else:
+                str_sec = str(seconds)
 
-        return f"{str_min}:{str_sec}"
+            return f"{str_min}:{str_sec}"
+        return ""

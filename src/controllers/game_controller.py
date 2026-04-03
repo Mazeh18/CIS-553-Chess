@@ -28,9 +28,9 @@ class GameController:
         """Initialize a new game with the given time control."""
         board = Board()
         board.initialize_standard()
-        #self._clock_controller.initialize(time_control)
         self.game_state = GameState(board, time_control)
-        #self._clock_controller.clock = self.game_state.clock
+        self._clock_controller.clock = self.game_state.clock
+        self._clock_controller.initialize(time_control)
         #self._clock_controller.start_clock(Color.WHITE)
 
     def attempt_move(self, attempt: MoveAttempt) -> MoveResult:
