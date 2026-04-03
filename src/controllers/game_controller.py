@@ -95,6 +95,7 @@ class GameController:
             captured_piece=captured_piece,
             is_castling=is_castling,
             is_en_passant=is_en_passant,
+            time_after_move=self._clock_controller.clock.get_time(board.current_turn)
         )
         board.execute_move(move)
 
@@ -239,6 +240,11 @@ class GameController:
 
         # Recalculate game status
         current_color = board.current_turn
+        if current_color == Color.WHITE:
+            self._clock_controller.clock.white_time = move.time_after_move
+        else:
+            self._clock_controller.clock.black_time = move.time_after_move
+
         if self._move_validator.is_in_check(board, current_color):
             self.game_state.status = GameStatus.CHECK
         else:
