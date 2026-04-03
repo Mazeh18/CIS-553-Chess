@@ -209,6 +209,7 @@ class GameController:
         if self.game_state:
             self.game_state.status = GameStatus.RESIGNED
             self.game_state.winner = color.opposite()
+            self._clock_controller.stop_clock()
 
     def undo_last_move(self) -> bool:
         """Revert the last move on the board, restore captured pieces, recalculate status.
