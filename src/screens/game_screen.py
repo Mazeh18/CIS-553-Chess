@@ -93,11 +93,6 @@ class GameScreen(BaseScreen):
         self._virtual_surface = pygame.Surface((BASE_WIDTH, BASE_HEIGHT))
         screen_w, screen_h = self._virtual_surface.get_size()
 
-        # resolution scaling
-        self._scale_x = screen_w / BASE_WIDTH
-        self._scale_y = screen_h / BASE_HEIGHT
-        self._scale = min(self._scale_x, self._scale_y)
-
         # Board sizing: fit to ~75% of screen height, shifted left for side panel
         board_margin = 150
         self._square_size = (screen_h - board_margin * 2) // 8
@@ -276,7 +271,7 @@ class GameScreen(BaseScreen):
 
         # Scroll move history with mouse wheel
         if virtual_event.type == pygame.MOUSEWHEEL:
-            mx, my = pygame.mouse.get_pos()
+            mx, my = self.create_virtual_event(pygame.event.Event(pygame.MOUSEMOTION, pos=pygame.mouse.get_pos(), rel=(0,0), buttons=(0,0,0))).pos
             if (
                 self._panel_x <= mx <= self._panel_x + self._panel_w
                 and self._panel_y <= my <= self._panel_y + self._panel_h
@@ -305,8 +300,8 @@ class GameScreen(BaseScreen):
                     self._promotion_popup = PromotionPopup(
                         surface=self._virtual_surface,
                         square_size=self._square_size,
-                        board_x=self._board_x,
-                        board_y=self._board_y,
+                        board_x=self._board_x + BOARD_BORDER_P,
+                        board_y=self._board_y + BOARD_BORDER_P,
                         color=color,
                         position=pos,
                         on_select=self._on_promotion_select,
@@ -385,15 +380,16 @@ class GameScreen(BaseScreen):
                 self._game_over_popup, (86, 49, 29), self._game_over_rect, width=10, border_radius=8
             )
             self._virtual_surface.blit(self._game_over_popup, self._game_over_pos)
-            self._back_button.rect = pygame.Rect(
-                                        self._new_game_button.rect.x + BUTTON_WIDTH - 20, 
-                                        self._new_game_button.rect.y, 
-                                        BUTTON_WIDTH - 35, 
-                                        BUTTON_HEIGHT + 10
-                                    )
-            self._new_game_button.enabled = True
+            if not self._new_game_button.enabled:
+                self._back_button.rect = pygame.Rect(
+                                            self._new_game_button.rect.x + BUTTON_WIDTH - 20,
+                                            self._new_game_button.rect.y,
+                                            BUTTON_WIDTH - 35,
+                                            BUTTON_HEIGHT + 10
+                                        )
+                self._new_game_button.enabled = True
             self._new_game_button.draw(self._virtual_surface)
-            self._back_button.draw(self._virtual_surface)            
+            self._back_button.draw(self._virtual_surface)
             self._draw_status()
 
         scaled_virtual = pygame.transform.smoothscale(self._virtual_surface, self.surface.get_size())
@@ -504,12 +500,12 @@ class GameScreen(BaseScreen):
             if captured_color == Color.BLACK:
                 x_piece = self._board_x - 180 + (row * spacing - 10)
                 y_piece = self._board_y + 225 + (spacing * n_pieces)
-                piece = pygame.transform.scale(PIECE_BLACK.get(piece.piece_type, "?").convert_alpha(), (self._square_size - 20, self._square_size - 20))
+                piece_surf = pygame.transform.scale(PIECE_BLACK.get(piece.piece_type, "?").convert_alpha(), (self._square_size - 20, self._square_size - 20))
             else:
                 x_piece = self._board_x + 20 + self._border_size + (row * spacing - 10)
                 y_piece = self._board_y + 225 + (spacing * n_pieces)
-                piece = pygame.transform.scale(PIECE_WHITE.get(piece.piece_type, "?").convert_alpha(), (self._square_size - 20, self._square_size - 20))
-            self._virtual_surface.blit(piece, (x_piece, y_piece))
+                piece_surf = pygame.transform.scale(PIECE_WHITE.get(piece.piece_type, "?").convert_alpha(), (self._square_size - 20, self._square_size - 20))
+            self._virtual_surface.blit(piece_surf, (x_piece, y_piece))
             n_pieces += 1
             if n_pieces >= 7:
                 n_pieces = 0
