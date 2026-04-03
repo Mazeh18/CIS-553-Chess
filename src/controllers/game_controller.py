@@ -203,7 +203,10 @@ class GameController:
     def update(self, delta: float) -> None:
         """Called each frame. Clock updates will go here in the future."""
         if self._clock_controller.update(delta):
-            self.game_state = GameStatus.TIMEOUT
+            self.game_state.status = GameStatus.TIMEOUT
+            board = self.game_state.board
+            self.game_state.winner = board.current_turn.opposite()
+            self._clock_controller.stop_clock()
 
     def resign(self, color: Color) -> None:
         """End the game by resignation."""
@@ -261,14 +264,17 @@ class GameController:
 
         if in_check:
             if self._move_validator.is_checkmate(board, color_to_move):
+                self._clock_controller.stop_clock()
                 return GameStatus.CHECKMATE
             return GameStatus.CHECK
 
         if self._move_validator.is_stalemate(board, color_to_move):
+            self._clock_controller.stop_clock()
             return GameStatus.STALEMATE
 
         draw_status = self._draw_detector.check_draw_conditions(board)
         if draw_status is not None:
+            self._clock_controller.stop_clock()
             return draw_status
 
         return GameStatus.ACTIVE

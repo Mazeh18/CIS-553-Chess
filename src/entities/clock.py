@@ -42,9 +42,10 @@ class Clock:
 
     def is_time_expired(self, color: Color) -> bool:
         if color == Color.WHITE:
-            return self.white_time == 0
+            # ensure that clock stops at 00:00
+            return self.white_time < 1
         else:
-            return self.black_time == 0
+            return self.black_time < 1
 
     def format_time(self, color: Color) -> str:
         """Return a formatted display string"""
