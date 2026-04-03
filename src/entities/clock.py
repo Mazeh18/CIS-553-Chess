@@ -13,25 +13,55 @@ class Clock:
         self.enabled: bool = False
 
     def get_time(self, color: Color) -> float:
-        pass
+        if color == Color.WHITE:
+            return self.white_time
+        else:
+            return self.black_time
 
     def tick(self, delta: float) -> None:
         """Decrements active player's time"""
-        pass
+        if self.active_color == Color.WHITE:
+            self.white_time -= delta
+        else:
+            self.black_time -= delta
 
     def add_increment(self, color: Color) -> None:
         """Adds time increment after a move"""
-        pass
+        if color == Color.WHITE:
+            self.white_time += self.increment
+        else:
+            self.black_time += self.increment
 
     def start(self, color: Color) -> None:
-        pass
+        self.active_color = color
+        self.is_running = True
 
     def stop(self) -> None:
-        pass
+        self.is_running = False
 
     def is_time_expired(self, color: Color) -> bool:
-        pass
+        if color == Color.WHITE:
+            return self.white_time == 0
+        else:
+            return self.black_time == 0
 
     def format_time(self, color: Color) -> str:
         """Return a formatted display string"""
-        pass
+        if color == Color.WHITE:
+            minutes = int(self.white_time // 60)
+            seconds = int(self.white_time % 60)
+        else:
+            minutes = int(self.black_time // 60)
+            seconds = int(self.black_time % 60)
+
+        if minutes <= 9:
+            str_min = f"0{minutes}"
+        else:
+            str_min = str(minutes)
+
+        if seconds <= 9:
+            str_sec = f"0{seconds}"
+        else:
+            str_sec = str(seconds)
+
+        return f"{str_min}:{str_sec}"

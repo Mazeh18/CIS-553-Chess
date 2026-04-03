@@ -12,7 +12,7 @@ from src.entities.enums import Color, GameStatus, PieceType
 from src.controllers.move_validator import MoveValidator
 from src.controllers.notation_controller import NotationController
 from src.controllers.draw_detector import DrawDetector
-
+from src.controllers.clock_controller import ClockController
 
 class GameController:
     """Central orchestrator for the game. Owns GameState, dispatches actions."""
@@ -21,13 +21,17 @@ class GameController:
         self._move_validator = MoveValidator()
         self._notation_controller = NotationController()
         self._draw_detector = DrawDetector()
+        self._clock_controller = ClockController()
         self.game_state: Optional[GameState] = None
 
     def new_game(self, time_control: TimeControl) -> None:
         """Initialize a new game with the given time control."""
         board = Board()
         board.initialize_standard()
+        #self._clock_controller.initialize(time_control)
         self.game_state = GameState(board, time_control)
+        #self._clock_controller.clock = self.game_state.clock
+        #self._clock_controller.start_clock(Color.WHITE)
 
     def attempt_move(self, attempt: MoveAttempt) -> MoveResult:
         """Validate and execute a move. Returns MoveResult."""
@@ -195,6 +199,8 @@ class GameController:
     def update(self, delta: float) -> None:
         """Called each frame. Clock updates will go here in the future."""
         pass
+        #if self._clock_controller.update(delta):
+        #    self.game_state = GameStatus.TIMEOUT
 
     def resign(self, color: Color) -> None:
         """End the game by resignation."""
