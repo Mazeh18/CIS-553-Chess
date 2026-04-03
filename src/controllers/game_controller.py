@@ -29,6 +29,7 @@ class GameController:
         board = Board()
         board.initialize_standard()
         self.game_state = GameState(board, time_control)
+        # set clock for clock controller
         self._clock_controller.clock = self.game_state.clock
         self._clock_controller.initialize(time_control)
         self._clock_controller.start_clock(Color.WHITE)
@@ -201,7 +202,7 @@ class GameController:
         return self._move_validator.get_legal_moves(self.game_state.board, position)
 
     def update(self, delta: float) -> None:
-        """Called each frame. Clock updates will go here in the future."""
+        """Update the timer for each frame."""
         if self._clock_controller.update(delta):
             self.game_state.status = GameStatus.TIMEOUT
             board = self.game_state.board

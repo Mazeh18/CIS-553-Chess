@@ -13,6 +13,7 @@ class Clock:
         self.enabled: bool = False
 
     def get_time(self, color: Color) -> float:
+        """Returns a player's time for move undo"""
         if color == Color.WHITE:
             return self.white_time
         else:
@@ -41,14 +42,15 @@ class Clock:
         self.is_running = False
 
     def is_time_expired(self, color: Color) -> bool:
+        """Returns True when clock reaches 00:00"""
         if color == Color.WHITE:
-            # ensure that clock stops at 00:00
+            # ensures that clock stops at 00:00
             return self.white_time < 1
         else:
             return self.black_time < 1
 
     def format_time(self, color: Color) -> str:
-        """Return a formatted display string"""
+        """Return a formatted display string, empty string if no time selected"""
         if self.enabled:
             if color == Color.WHITE:
                 minutes = int(self.white_time // 60)

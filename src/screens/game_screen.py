@@ -284,7 +284,7 @@ class GameScreen(BaseScreen):
         # Board background
         self.surface.blit(self._board_surface, (self._board_x, self._board_y))
 
-        # draw a clock countdown
+        # draw a clock countdown - swap out for UI elements
         font_times = pygame.font.Font(None, 50)
         text_black = font_times.render('Black', False, 'white')
         text_black_time = font_times.render(self._game_controller.game_state.clock.format_time(Color.BLACK), False, 'white')

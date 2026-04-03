@@ -10,6 +10,7 @@ class ClockController:
         self.clock: Optional[Clock] = None
 
     def initialize(self, time_control: TimeControl):
+        """Sets starting minutes and enables clock if a time is selected"""
         if time_control.name != "No Time":
             self.clock.white_time = time_control.get_starting_seconds()
             self.clock.black_time = time_control.get_starting_seconds()
@@ -23,6 +24,7 @@ class ClockController:
         self.clock.stop()
 
     def update(self, delta: float) -> bool:
+        """Ticks timer down, returns True if timer is up"""
         self.clock.tick(delta)
         if self.clock.is_time_expired(self.clock.active_color):
             return True
@@ -30,6 +32,7 @@ class ClockController:
             return False
 
     def switch_turn(self, color: Color):
+        """Adds increment after a move and switches turns"""
         self.clock.stop()
         self.clock.add_increment(color)
         self.clock.start(color.opposite())
