@@ -102,6 +102,7 @@ class GameController:
         promotion_row = 0 if piece.color == Color.WHITE else 7
         if piece.piece_type == PieceType.PAWN and attempt.end_pos.row == promotion_row:
             self.game_state.pending_promotion = attempt.end_pos
+            self._clock_controller.stop_clock()
             return MoveResult(
                 success=True,
                 is_promotion=True,
@@ -165,6 +166,7 @@ class GameController:
         )
 
         # Switch turn
+        self._clock_controller.switch_turn(board.current_turn)
         board.switch_turn()
 
         # Clear pending promotion

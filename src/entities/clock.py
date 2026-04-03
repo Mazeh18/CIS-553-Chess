@@ -20,10 +20,11 @@ class Clock:
 
     def tick(self, delta: float) -> None:
         """Decrements active player's time"""
-        if self.active_color == Color.WHITE:
-            self.white_time -= delta
-        else:
-            self.black_time -= delta
+        if self.is_running:
+            if self.active_color == Color.WHITE:
+                self.white_time -= delta
+            else:
+                self.black_time -= delta
 
     def add_increment(self, color: Color) -> None:
         """Adds time increment after a move"""
