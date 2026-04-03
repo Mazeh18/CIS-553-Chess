@@ -31,7 +31,7 @@ class GameController:
         self.game_state = GameState(board, time_control)
         self._clock_controller.clock = self.game_state.clock
         self._clock_controller.initialize(time_control)
-        #self._clock_controller.start_clock(Color.WHITE)
+        self._clock_controller.start_clock(Color.WHITE)
 
     def attempt_move(self, attempt: MoveAttempt) -> MoveResult:
         """Validate and execute a move. Returns MoveResult."""
@@ -198,9 +198,8 @@ class GameController:
 
     def update(self, delta: float) -> None:
         """Called each frame. Clock updates will go here in the future."""
-        pass
-        #if self._clock_controller.update(delta):
-        #    self.game_state = GameStatus.TIMEOUT
+        if self._clock_controller.update(delta):
+            self.game_state = GameStatus.TIMEOUT
 
     def resign(self, color: Color) -> None:
         """End the game by resignation."""
