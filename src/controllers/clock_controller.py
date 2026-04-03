@@ -30,6 +30,6 @@ class ClockController:
             return False
 
     def switch_turn(self, color: Color):
-        self.clock.add_increment(color)
         self.clock.stop()
+        self.clock.add_increment(color)
         self.clock.start(color.opposite())

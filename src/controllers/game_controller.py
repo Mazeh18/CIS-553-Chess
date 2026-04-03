@@ -112,6 +112,7 @@ class GameController:
         move.notation = self._notation_controller.generate_notation(board, move)
 
         # Switch turn
+        self._clock_controller.switch_turn(board.current_turn)
         board.switch_turn()
 
         # Post-move status checks
