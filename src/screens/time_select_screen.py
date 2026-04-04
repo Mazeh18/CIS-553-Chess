@@ -8,21 +8,22 @@ from src.components.text_input import TextInput
 from src.constants import (
     COLOR_BACKGROUND,
     COLOR_TEXT,
-    COLOR_TEXT_DIM,
     FONT_NAME,
     FONT_SIZE_HEADING,
     FONT_SIZE_BODY,
     BUTTON_WIDTH,
     BUTTON_HEIGHT,
     BUTTON_SPACING,
+    BASE_HEIGHT,
+    BASE_WIDTH
 )
 
 # (label, minutes or None, increment_seconds)
 PRESETS = [
-    ("Bullet (2+1)", 2, 1),
-    ("Blitz (5+0)", 5, 0),
-    ("Rapid (10+5)", 10, 5),
-    ("Classic (30+20)", 30, 20),
+    ("Bullet\n(2+1)", 2, 1),
+    ("Blitz\n(5+0)", 5, 0),
+    ("Rapid\n(10+5)", 10, 5),
+    ("Classic\n(30+20)", 30, 20),
     ("No Time", None, 0),
     ("Custom", None, None),  # sentinel — triggers custom view
 ]
@@ -43,11 +44,15 @@ class TimeSelectScreen(BaseScreen):
         self._on_back = on_back
         self._showing_custom = False
 
-        screen_w, screen_h = surface.get_size()
+        self._virtual_surface = pygame.Surface((BASE_WIDTH, BASE_HEIGHT))
+        screen_w, screen_h = self._virtual_surface.get_size()
         center_x = screen_w // 2
 
         heading_font = pygame.font.Font(FONT_NAME, FONT_SIZE_HEADING)
-
+        
+        # Background
+        self._scaled_back = pygame.transform.scale(COLOR_BACKGROUND.convert_alpha(), self._virtual_surface.get_size())
+        
         # ── Preset view ───────────────────────────────────────
         self._preset_title_surface = heading_font.render(
             "Select Time Control", True, COLOR_TEXT
@@ -57,13 +62,13 @@ class TimeSelectScreen(BaseScreen):
         )
 
         # 2x3 grid of preset buttons
-        btn_w, btn_h = BUTTON_WIDTH, BUTTON_HEIGHT
-        grid_gap = BUTTON_SPACING
+        btn_w, btn_h = BUTTON_WIDTH + 100, BUTTON_HEIGHT + 100
+        grid_gap = BUTTON_SPACING + 20
         cols, rows = 3, 2
         grid_w = cols * btn_w + (cols - 1) * grid_gap
         grid_h = rows * btn_h + (rows - 1) * grid_gap
         grid_x = center_x - grid_w // 2
-        grid_y = screen_h // 3 - grid_h // 2
+        grid_y = screen_h // 3 - grid_h // 2 + 100
 
         self._preset_buttons: list[Button] = []
         for i, (label, minutes, increment) in enumerate(PRESETS):
@@ -85,10 +90,10 @@ class TimeSelectScreen(BaseScreen):
         self._preset_back = Button(
             label="Back",
             rect=pygame.Rect(
-                center_x - btn_w // 2,
+                center_x - (BUTTON_WIDTH + 40) // 2,
                 grid_y + grid_h + 60,
-                btn_w,
-                btn_h,
+                BUTTON_WIDTH + 40,
+                BUTTON_HEIGHT + 40,
             ),
             on_click=on_back,
         )
@@ -101,9 +106,9 @@ class TimeSelectScreen(BaseScreen):
             centerx=center_x, centery=screen_h // 6
         )
 
-        input_w, input_h = 120, 44
+        input_w, input_h = 240, 88
         input_y = screen_h // 3 + 10
-        gap = 60
+        gap = 120
 
         self._minutes_input = TextInput(
             label="Minutes",
@@ -175,15 +180,17 @@ class TimeSelectScreen(BaseScreen):
     # ── Screen interface ──────────────────────────────────────
 
     def handle_event(self, event: pygame.event.Event) -> None:
+        virtual_event = self.create_virtual_event(event)
         if self._showing_custom:
-            self._minutes_input.handle_event(event)
-            self._increment_input.handle_event(event)
-            self._custom_start.handle_event(event)
-            self._custom_back.handle_event(event)
+            self._minutes_input.handle_event(virtual_event)
+            self._increment_input.handle_event(virtual_event)
+            self._custom_start.handle_event(virtual_event)
+            self._custom_back.handle_event(virtual_event)
         else:
             for btn in self._preset_buttons:
-                btn.handle_event(event)
-            self._preset_back.handle_event(event)
+                btn.handle_event(virtual_event)
+            self._preset_back.handle_event(virtual_event)
+            
 
     def update(self, dt: float) -> None:
         if self._showing_custom:
@@ -191,25 +198,28 @@ class TimeSelectScreen(BaseScreen):
             self._increment_input.update(dt)
 
     def draw(self) -> None:
-        self.surface.fill(COLOR_BACKGROUND)
+        self._virtual_surface.blit(self._scaled_back, (0,0))
 
         if self._showing_custom:
-            self.surface.blit(self._custom_title_surface, self._custom_title_rect)
-            self._minutes_input.draw(self.surface)
-            self._increment_input.draw(self.surface)
-            self._custom_start.draw(self.surface)
-            self._custom_back.draw(self.surface)
+            self._virtual_surface.blit(self._custom_title_surface, self._custom_title_rect)
+            self._minutes_input.draw(self._virtual_surface)
+            self._increment_input.draw(self._virtual_surface)
+            self._custom_start.draw(self._virtual_surface)
+            self._custom_back.draw(self._virtual_surface)
 
             if self._error_text:
                 err_surf = self._error_font.render(
                     self._error_text, True, (230, 80, 80)
                 )
                 err_rect = err_surf.get_rect(
-                    centerx=self.surface.get_width() // 2, centery=self._error_y
+                    centerx=self._virtual_surface.get_width() // 2, centery=self._error_y
                 )
-                self.surface.blit(err_surf, err_rect)
+                self._virtual_surface.blit(err_surf, err_rect)
         else:
-            self.surface.blit(self._preset_title_surface, self._preset_title_rect)
+            self._virtual_surface.blit(self._preset_title_surface, self._preset_title_rect)
             for btn in self._preset_buttons:
-                btn.draw(self.surface)
-            self._preset_back.draw(self.surface)
+                btn.draw(self._virtual_surface)
+            self._preset_back.draw(self._virtual_surface)
+        
+        scaled_virtual = pygame.transform.smoothscale(self._virtual_surface, self.surface.get_size())
+        self.surface.blit(scaled_virtual, (0,0))

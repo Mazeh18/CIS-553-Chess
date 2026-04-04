@@ -5,7 +5,9 @@ from src.entities.board import Board
 from src.entities.drag_state import DragState
 from src.entities.move_attempt import MoveAttempt
 from src.entities.enums import Color
-
+from src.constants import (
+    BOARD_BORDER_P
+)
 
 class InputController:
     """Translates Pygame mouse events into game-level actions. Manages DragState."""
@@ -20,8 +22,8 @@ class InputController:
         get_current_turn_fn: Callable,
     ) -> None:
         self._drag_state = drag_state
-        self._board_x = board_x
-        self._board_y = board_y
+        self._board_x = board_x + BOARD_BORDER_P
+        self._board_y = board_y + BOARD_BORDER_P
         self._square_size = square_size
         self._get_legal_moves = get_legal_moves_fn
         self._get_current_turn = get_current_turn_fn
@@ -76,7 +78,7 @@ class InputController:
         col = (px - self._board_x) // self._square_size
         row = (py - self._board_y) // self._square_size
 
-        pos = Position(row, col)
+        pos = Position(int(row), int(col))
         if pos.is_valid():
             return pos
         return None

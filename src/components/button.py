@@ -8,10 +8,9 @@ from src.constants import (
     COLOR_BUTTON_DISABLED,
     COLOR_BUTTON_TEXT,
     COLOR_TEXT_DIM,
-    COLOR_BUTTON_BORDER,
-    BUTTON_BORDER_RADIUS,
     FONT_NAME,
     FONT_SIZE_BUTTON,
+    FONT_SIZE_BUTTON_S,
 )
 
 
@@ -23,6 +22,7 @@ class Button:
         label: str,
         rect: pygame.Rect,
         on_click: Optional[Callable[[], None]] = None,
+        small_font: bool = False,
         enabled: bool = True,
     ) -> None:
         self.label = label
@@ -30,7 +30,7 @@ class Button:
         self.on_click = on_click
         self.enabled = enabled
         self.hovered = False
-        self._font = pygame.font.Font(FONT_NAME, FONT_SIZE_BUTTON)
+        self._font = pygame.font.Font(FONT_NAME, FONT_SIZE_BUTTON if not small_font else FONT_SIZE_BUTTON_S)
 
     def handle_event(self, event: pygame.event.Event) -> None:
         if not self.enabled:
@@ -54,17 +54,19 @@ class Button:
             bg_color = COLOR_BUTTON
             text_color = COLOR_BUTTON_TEXT
 
-        pygame.draw.rect(
-            surface, bg_color, self.rect, border_radius=BUTTON_BORDER_RADIUS
-        )
-        pygame.draw.rect(
-            surface,
-            COLOR_BUTTON_BORDER,
-            self.rect,
-            width=2,
-            border_radius=BUTTON_BORDER_RADIUS,
-        )
-
-        text_surface = self._font.render(self.label, True, text_color)
-        text_rect = text_surface.get_rect(center=self.rect.center)
-        surface.blit(text_surface, text_rect)
+        scaled_image = pygame.transform.scale(bg_color, self.rect.size)
+        surface.blit(scaled_image, self.rect)
+        
+        # Text wrapping
+        lines = self.label.split("\n")
+        line_height = self._font.get_height()
+        total_height = len(lines) * line_height
+        y_offset = self.rect.y + (self.rect.height - total_height) // 2
+        for line in lines:
+            text_surface = self._font.render(line.strip(), True, text_color)
+            text_rect = text_surface.get_rect(centerx=self.rect.centerx)
+            text_rect.y = y_offset
+            surface.blit(text_surface, text_rect)
+            y_offset += line_height
+            
+        

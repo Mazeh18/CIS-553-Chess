@@ -235,12 +235,12 @@ The **New Game** button is the only action available. Undo and Resign are disabl
 |---------|-------|
 | Light squares | Beige (#F0D9B5) |
 | Dark squares | Brown (#B58863) |
-| Legal move dots | Gray, semi-transparent |
-| Capture highlight | Red tint, semi-transparent |
-| Selected/origin square | Light blue (#646FD4, semi-transparent) |
+| Legal move dots | Blue (#3BB3E8), semi-transparent |
+| Capture highlight | Red (#E84040, semi-transparent) |
+| Selected/origin square | Steel blue (#4682B4, semi-transparent) |
 | Check highlight on King | Red (#E84040, semi-transparent) |
-| Background | Dark gray (#312E2B) |
-| Side panels | Slightly lighter gray (#3C3A37) |
-| Text | White (#FFFFFF) |
-| Buttons | Rounded, neutral gray with hover effect |
-| Start menu background | Dark gradient |
+| Background | Wood Grain with Brown (#875D41) |
+| Side panels | Tan (#BEA48A) |
+| Text | Black (#000000) |
+| Buttons | Tan (#BEA58C) with Brown border (#56311D) with hover effect |
+| Start menu background | Custom Wood asset |

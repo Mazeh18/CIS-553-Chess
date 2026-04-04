@@ -11,11 +11,11 @@ from src.controllers.game_controller import GameController
 from src.controllers.input_controller import InputController
 from src.constants import (
     COLOR_BACKGROUND,
-    COLOR_LIGHT_SQUARE,
-    COLOR_DARK_SQUARE,
+    LIGHT_SQUARE,
+    DARK_SQUARE,
+    BOARD_BORDER,
+    BOARD_BORDER_P,
     COLOR_TEXT,
-    COLOR_TEXT_DIM,
-    COLOR_LABEL,
     COLOR_HIGHLIGHT_ORIGIN,
     COLOR_PANEL,
     FONT_NAME,
@@ -23,10 +23,16 @@ from src.constants import (
     FONT_SIZE_BODY,
     BUTTON_WIDTH,
     BUTTON_HEIGHT,
+    BASE_HEIGHT,
+    BASE_WIDTH
 )
 
 # ── Piece rendering ────────────────────────────────────────────────────
-PIECE_LETTER = {
+# Placeholder assets: colored circles with a letter abbreviation.
+# To swap in real PNGs later, replace _draw_piece() or load images into
+# PIECE_IMAGES and blit them instead.
+
+PIECES = {
     PieceType.KING: "K",
     PieceType.QUEEN: "Q",
     PieceType.ROOK: "R",
@@ -35,19 +41,22 @@ PIECE_LETTER = {
     PieceType.PAWN: "P",
 }
 
-PIECE_SYMBOL = {
-    (PieceType.KING, Color.WHITE): "\u2654",
-    (PieceType.QUEEN, Color.WHITE): "\u2655",
-    (PieceType.ROOK, Color.WHITE): "\u2656",
-    (PieceType.BISHOP, Color.WHITE): "\u2657",
-    (PieceType.KNIGHT, Color.WHITE): "\u2658",
-    (PieceType.PAWN, Color.WHITE): "\u2659",
-    (PieceType.KING, Color.BLACK): "\u265a",
-    (PieceType.QUEEN, Color.BLACK): "\u265b",
-    (PieceType.ROOK, Color.BLACK): "\u265c",
-    (PieceType.BISHOP, Color.BLACK): "\u265d",
-    (PieceType.KNIGHT, Color.BLACK): "\u265e",
-    (PieceType.PAWN, Color.BLACK): "\u265f",
+PIECE_WHITE = {
+    PieceType.KING: pygame.image.load("assets/Pieces/KingWhite.png"),
+    PieceType.QUEEN: pygame.image.load("assets/Pieces/QueenWhite.png"),
+    PieceType.ROOK: pygame.image.load("assets/Pieces/RookWhite.png"),
+    PieceType.BISHOP: pygame.image.load("assets/Pieces/BishopWhite.png"),
+    PieceType.KNIGHT: pygame.image.load("assets/Pieces/KnightWhite.png"),
+    PieceType.PAWN: pygame.image.load("assets/Pieces/PawnWhite.png")
+}
+
+PIECE_BLACK = {
+    PieceType.KING: pygame.image.load("assets/Pieces/KingBlack.png"),
+    PieceType.QUEEN: pygame.image.load("assets/Pieces/QueenBlack.png"),
+    PieceType.ROOK: pygame.image.load("assets/Pieces/RookBlack.png"),
+    PieceType.BISHOP: pygame.image.load("assets/Pieces/BishopBlack.png"),
+    PieceType.KNIGHT: pygame.image.load("assets/Pieces/KnightBlack.png"),
+    PieceType.PAWN: pygame.image.load("assets/Pieces/PawnBlack.png")
 }
 
 # Sort order for captured pieces display (highest value first)
@@ -64,13 +73,9 @@ COLOR_BLACK_PIECE = (30, 30, 30)
 COLOR_WHITE_PIECE_TEXT = (30, 30, 30)
 COLOR_BLACK_PIECE_TEXT = (220, 220, 220)
 
-FILE_LABELS = "abcdefgh"
-RANK_LABELS = "87654321"
-
 # Move history panel
 PANEL_PADDING = 10
 HISTORY_ROW_HEIGHT = 24
-
 
 class GameScreen(BaseScreen):
     """Game screen with interactive drag-and-drop chess."""
@@ -80,29 +85,43 @@ class GameScreen(BaseScreen):
         surface: pygame.Surface,
         game_controller: GameController,
         on_back: Optional[Callable[[], None]] = None,
+        on_new: Optional[Callable[[], None]] = None,
     ) -> None:
-        super().__init__(surface)
+        super().__init__(surface) 
         self._game_controller = game_controller
-
-        screen_w, screen_h = surface.get_size()
+        self._on_back = on_back
+        self._virtual_surface = pygame.Surface((BASE_WIDTH, BASE_HEIGHT))
+        screen_w, screen_h = self._virtual_surface.get_size()
 
         # Board sizing: fit to ~75% of screen height, shifted left for side panel
-        board_margin = 60
+        board_margin = 150
         self._square_size = (screen_h - board_margin * 2) // 8
         self._board_size = self._square_size * 8
+        self._border_size = self._board_size + (BOARD_BORDER_P * 2)
+        
+        # Background
+        self._scaled_back = pygame.transform.scale(COLOR_BACKGROUND.convert_alpha(), self._virtual_surface.get_size())
+        
+        # End Game Screen
+        self._game_over_popup = pygame.Surface((screen_w - 200, 150), pygame.SRCALPHA)
+        self._game_over_rect = pygame.Rect(0, 0, screen_w - 200, 125)
+        self._game_over_pos = (100, screen_h-125)
 
         # Position board left of center to make room for history panel
-        panel_width = 240
+        panel_width = 200
         total_width = self._board_size + 20 + panel_width
         left_offset = (screen_w - total_width) // 2
-        self._board_x = left_offset
-        self._board_y = (screen_h - self._board_size) // 2
+        self._board_x = left_offset - 175
+        self._board_y = ((screen_h - (self._board_size + BOARD_BORDER_P)) // 2) - 50
 
         # Move history panel region (right of board)
         self._panel_x = self._board_x + self._board_size + 20
         self._panel_y = self._board_y
         self._panel_w = panel_width
         self._panel_h = self._board_size
+
+        # Piece Collection Trays (3/4 size of board height)
+        self._pc_tray = pygame.transform.scale(pygame.image.load("assets/PieceCollection.png"),(self._square_size*2, self._border_size * 0.75))
 
         # Captured pieces display regions
         self._captured_font_size = max(16, self._square_size // 4)
@@ -111,22 +130,57 @@ class GameScreen(BaseScreen):
         self._label_font = pygame.font.Font(FONT_NAME, FONT_SIZE_SMALL)
         self._piece_font = pygame.font.Font(FONT_NAME, int(self._square_size * 0.45))
         self._status_font = pygame.font.Font(FONT_NAME, FONT_SIZE_BODY)
-        self._history_font = pygame.font.Font(FONT_NAME, FONT_SIZE_SMALL)
+        self._history_font = pygame.font.Font(FONT_NAME, FONT_SIZE_SMALL - 5)
         self._captured_font = pygame.font.Font(None, self._captured_font_size)
-        self._advantage_font = pygame.font.Font(FONT_NAME, FONT_SIZE_SMALL)
+        self._advantage_font = pygame.font.Font(FONT_NAME, int(FONT_SIZE_BODY * 0.75))
 
-        # Back button (top-left corner)
+        # Main Menu button (bottom right)
         self._back_button = Button(
             label="Main Menu",
-            rect=pygame.Rect(20, 20, BUTTON_WIDTH, BUTTON_HEIGHT),
+            rect=pygame.Rect(
+                self._panel_x + BOARD_BORDER_P + 530, 
+                self._panel_y + self._panel_h + 125, 
+                BUTTON_WIDTH - 35, 
+                BUTTON_HEIGHT + 10),
             on_click=on_back,
+            small_font=True
+        )
+
+        # New Game button (bottom right)
+        self._new_game_button = Button(
+            label="New Game",
+            rect=pygame.Rect(
+                screen_w - 600, 
+                screen_h - 100, 
+                BUTTON_WIDTH - 35, 
+                BUTTON_HEIGHT + 10),
+            on_click=on_new,
+            small_font=True,
+            enabled=False
+        )    
+
+        # Resign
+        self._resign_button = Button(
+            label="Resign",
+            rect=pygame.Rect(
+                self._panel_x + BOARD_BORDER_P + 300, 
+                self._panel_y + self._panel_h + 125, 
+                BUTTON_WIDTH - 40, 
+                BUTTON_HEIGHT + 10),
+            on_click=self._on_resign,
+            small_font=True
         )
 
         # Undo button (below back button)
         self._undo_button = Button(
             label="Undo",
-            rect=pygame.Rect(20, 20 + BUTTON_HEIGHT + 10, BUTTON_WIDTH, BUTTON_HEIGHT),
+            rect=pygame.Rect(
+                self._panel_x + BOARD_BORDER_P + 75, 
+                self._panel_y + self._panel_h + 125, 
+                BUTTON_WIDTH - 40, 
+                BUTTON_HEIGHT + 10),
             on_click=self._on_undo,
+            small_font=True
         )
 
         # Pre-render static board surface (squares + labels)
@@ -159,62 +213,33 @@ class GameScreen(BaseScreen):
     def _render_board(self) -> pygame.Surface:
         """Draw the 8x8 board with rank/file labels onto a surface."""
         sq = self._square_size
-        surf = pygame.Surface((self._board_size, self._board_size))
-
+        playable_surf = pygame.Surface((self._board_size, self._board_size))
+        border_surf = pygame.Surface((self._border_size, self._border_size))
+        border = pygame.transform.scale(BOARD_BORDER.convert_alpha(), (self._border_size, self._border_size))
+        border_surf.blit(border, (0, 0))
         for row in range(8):
             for col in range(8):
                 is_light = (row + col) % 2 == 0
-                color = COLOR_LIGHT_SQUARE if is_light else COLOR_DARK_SQUARE
-                pygame.draw.rect(surf, color, (col * sq, row * sq, sq, sq))
+                color = LIGHT_SQUARE.convert_alpha() if is_light else DARK_SQUARE.convert_alpha()
+                playable_surf.blit(color, (col * sq,row * sq, sq, sq))
 
-        # File labels (a-h) along the bottom
-        for col in range(8):
-            label = self._label_font.render(FILE_LABELS[col], True, COLOR_LABEL)
-            surf.blit(
-                label,
-                (
-                    col * sq + sq - label.get_width() - 2,
-                    7 * sq + sq - label.get_height() - 1,
-                ),
-            )
-
-        # Rank labels (8-1) along the left
-        for row in range(8):
-            label = self._label_font.render(RANK_LABELS[row], True, COLOR_LABEL)
-            surf.blit(label, (2, row * sq + 1))
-
-        return surf
+        border_surf.blit(playable_surf, (BOARD_BORDER_P,BOARD_BORDER_P))
+        return border_surf
 
     def _render_pieces(self) -> dict:
         """Pre-render placeholder piece surfaces (circle + letter)."""
         sq = self._square_size
-        radius = int(sq * 0.38)
         surfaces = {}
-
         for piece_type in PieceType:
             for color in Color:
-                piece_surf = pygame.Surface((sq, sq), pygame.SRCALPHA)
-
-                circle_color = (
-                    COLOR_WHITE_PIECE if color == Color.WHITE else COLOR_BLACK_PIECE
-                )
-                pygame.draw.circle(piece_surf, circle_color, (sq // 2, sq // 2), radius)
-                border_color = (180, 180, 180) if color == Color.WHITE else (80, 80, 80)
-                pygame.draw.circle(
-                    piece_surf, border_color, (sq // 2, sq // 2), radius, 2
-                )
-
-                text_color = (
-                    COLOR_WHITE_PIECE_TEXT
+                piece = (
+                    pygame.transform.scale(PIECE_WHITE[piece_type].convert_alpha(), (sq,sq))
                     if color == Color.WHITE
-                    else COLOR_BLACK_PIECE_TEXT
+                    else pygame.transform.scale(PIECE_BLACK[piece_type].convert_alpha(), (sq,sq))
                 )
-                letter_surf = self._piece_font.render(
-                    PIECE_LETTER[piece_type], True, text_color
-                )
-                letter_rect = letter_surf.get_rect(center=(sq // 2, sq // 2))
-                piece_surf.blit(letter_surf, letter_rect)
-
+                piece_surf = pygame.Surface((sq,sq), pygame.SRCALPHA)
+                piece_surf.blit(piece, piece_surf.get_rect(center=(sq // 2, sq // 2)))
+        
                 surfaces[(piece_type, color)] = piece_surf
 
         return surfaces
@@ -223,42 +248,49 @@ class GameScreen(BaseScreen):
         """Callback when the Undo button is clicked."""
         self._game_controller.undo_last_move()
 
+    def _on_resign(self) -> None:
+        """Callback when Resign button is pressed."""
+        self._game_controller.resign(self._game_controller.game_state.board.current_turn)
+    
     def _on_promotion_select(self, piece_type: PieceType) -> None:
         """Callback when a promotion piece is selected."""
         self._game_controller.attempt_promotion(piece_type)
         self._promotion_popup = None
 
     def handle_event(self, event: pygame.event.Event) -> None:
-        self._back_button.handle_event(event)
-        self._undo_button.handle_event(event)
+        virtual_event = self.create_virtual_event(event)
+        self._back_button.handle_event(virtual_event)
+        self._resign_button.handle_event(virtual_event)
+        self._undo_button.handle_event(virtual_event)
+        self._new_game_button.handle_event(virtual_event)
 
         # Route events to promotion popup if active (modal)
         if self._promotion_popup is not None:
-            self._promotion_popup.handle_event(event)
+            self._promotion_popup.handle_event(virtual_event)
             return
 
         # Scroll move history with mouse wheel
-        if event.type == pygame.MOUSEWHEEL:
-            mx, my = pygame.mouse.get_pos()
+        if virtual_event.type == pygame.MOUSEWHEEL:
+            mx, my = self.create_virtual_event(pygame.event.Event(pygame.MOUSEMOTION, pos=pygame.mouse.get_pos(), rel=(0,0), buttons=(0,0,0))).pos
             if (
                 self._panel_x <= mx <= self._panel_x + self._panel_w
                 and self._panel_y <= my <= self._panel_y + self._panel_h
             ):
-                self._history_scroll -= event.y * HISTORY_ROW_HEIGHT * 2
+                self._history_scroll -= virtual_event.y * HISTORY_ROW_HEIGHT * 2
                 self._history_scroll = max(0, self._history_scroll)
 
         # No interaction during game over
         if self._game_controller.game_state.is_game_over():
             return
 
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+        if virtual_event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             self._input_controller.handle_mouse_down(
-                event.pos, self._game_controller.game_state.board
+                virtual_event.pos, self._game_controller.game_state.board
             )
-        elif event.type == pygame.MOUSEMOTION:
-            self._input_controller.handle_mouse_motion(event.pos)
-        elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-            attempt = self._input_controller.handle_mouse_up(event.pos)
+        elif virtual_event.type == pygame.MOUSEMOTION:
+            self._input_controller.handle_mouse_motion(virtual_event.pos)
+        elif virtual_event.type == pygame.MOUSEBUTTONUP and virtual_event.button == 1:
+            attempt = self._input_controller.handle_mouse_up(virtual_event.pos)
             if attempt is not None:
                 result = self._game_controller.attempt_move(attempt)
                 if result.is_promotion:
@@ -266,10 +298,10 @@ class GameScreen(BaseScreen):
                     color = self._game_controller.game_state.board.current_turn
                     pos = self._game_controller.game_state.pending_promotion
                     self._promotion_popup = PromotionPopup(
-                        surface=self.surface,
+                        surface=self._virtual_surface,
                         square_size=self._square_size,
-                        board_x=self._board_x,
-                        board_y=self._board_y,
+                        board_x=self._board_x + BOARD_BORDER_P,
+                        board_y=self._board_y + BOARD_BORDER_P,
                         color=color,
                         position=pos,
                         on_select=self._on_promotion_select,
@@ -279,10 +311,10 @@ class GameScreen(BaseScreen):
         self._game_controller.update(dt)
 
     def draw(self) -> None:
-        self.surface.fill(COLOR_BACKGROUND)
+        self._virtual_surface.blit(self._scaled_back, (0,0))
 
         # Board background
-        self.surface.blit(self._board_surface, (self._board_x, self._board_y))
+        self._virtual_surface.blit(self._board_surface, (self._board_x, self._board_y))
 
         # Highlight origin square and legal moves if dragging
         if self._drag_state.is_dragging:
@@ -304,9 +336,9 @@ class GameScreen(BaseScreen):
                     ):
                         continue
                     piece_surf = self._piece_surfaces[(piece.piece_type, piece.color)]
-                    x = self._board_x + col * sq
-                    y = self._board_y + row * sq
-                    self.surface.blit(piece_surf, (x, y))
+                    x = self._board_x + col * sq + BOARD_BORDER_P
+                    y = self._board_y + row * sq + BOARD_BORDER_P
+                    self._virtual_surface.blit(piece_surf, (x, y))
 
         # Draw dragged piece at cursor
         if (
@@ -317,29 +349,51 @@ class GameScreen(BaseScreen):
             piece = self._drag_state.piece
             piece_surf = self._piece_surfaces[(piece.piece_type, piece.color)]
             mx, my = self._drag_state.mouse_pos
-            self.surface.blit(piece_surf, (mx - sq // 2, my - sq // 2))
+            self._virtual_surface.blit(piece_surf, (mx - sq // 2, my - sq // 2))
 
         # Captured pieces displays
         self._draw_captured_pieces()
 
         # Move history panel
-        self._draw_move_history()
-
-        # Turn indicator / status text
-        self._draw_status()
+        self._draw_move_history()        
 
         # Promotion popup (modal overlay)
         if self._promotion_popup is not None:
-            self._promotion_popup.draw(self.surface)
+            self._promotion_popup.draw(self._virtual_surface)
 
-        # Buttons
-        self._back_button.draw(self.surface)
+        if not self._game_controller.game_state.is_game_over():
+            # Buttons
+            self._back_button.draw(self._virtual_surface)
+            self._resign_button.draw(self._virtual_surface)
 
-        # Undo button: enabled only when moves exist and game is active
-        game_state = self._game_controller.game_state
-        has_moves = len(game_state.board.move_history) > 0
-        self._undo_button.enabled = has_moves and not game_state.is_game_over()
-        self._undo_button.draw(self.surface)
+            # Undo button: enabled only when moves exist and game is active
+            game_state = self._game_controller.game_state
+            has_moves = len(game_state.board.move_history) > 0
+            self._undo_button.enabled = has_moves and not game_state.is_game_over()
+            self._undo_button.draw(self._virtual_surface)
+            
+            # Turn indicator / status text
+            self._draw_status()
+        else:
+            pygame.draw.rect(self._game_over_popup, COLOR_PANEL, self._game_over_rect, border_radius=8)
+            pygame.draw.rect(
+                self._game_over_popup, (86, 49, 29), self._game_over_rect, width=10, border_radius=8
+            )
+            self._virtual_surface.blit(self._game_over_popup, self._game_over_pos)
+            if not self._new_game_button.enabled:
+                self._back_button.rect = pygame.Rect(
+                                            self._new_game_button.rect.x + BUTTON_WIDTH - 20,
+                                            self._new_game_button.rect.y,
+                                            BUTTON_WIDTH - 35,
+                                            BUTTON_HEIGHT + 10
+                                        )
+                self._new_game_button.enabled = True
+            self._new_game_button.draw(self._virtual_surface)
+            self._back_button.draw(self._virtual_surface)
+            self._draw_status()
+
+        scaled_virtual = pygame.transform.smoothscale(self._virtual_surface, self.surface.get_size())
+        self.surface.blit(scaled_virtual, (0,0))
 
     def _draw_highlights(self) -> None:
         """Draw highlights on the origin square and legal move destinations."""
@@ -349,40 +403,43 @@ class GameScreen(BaseScreen):
         if self._drag_state.origin:
             origin_surf = pygame.Surface((sq, sq), pygame.SRCALPHA)
             origin_surf.fill(COLOR_HIGHLIGHT_ORIGIN)
-            ox = self._board_x + self._drag_state.origin.col * sq
-            oy = self._board_y + self._drag_state.origin.row * sq
-            self.surface.blit(origin_surf, (ox, oy))
+            ox = self._board_x + self._drag_state.origin.col * sq + BOARD_BORDER_P
+            oy = self._board_y + self._drag_state.origin.row * sq + BOARD_BORDER_P
+            self._virtual_surface.blit(origin_surf, (ox, oy))
 
         # Draw legal move indicators
         board = self._game_controller.game_state.board
         for move_pos in self._drag_state.legal_moves:
+            cx = self._board_x + move_pos.col * sq + sq // 2 + BOARD_BORDER_P
+            cy = self._board_y + move_pos.row * sq + sq // 2 + BOARD_BORDER_P
+
             target = board.get_piece(move_pos)
             if target is not None:
                 # Capture highlight: semi-transparent ring
                 ring_surf = pygame.Surface((sq, sq), pygame.SRCALPHA)
                 pygame.draw.circle(
                     ring_surf,
-                    (0, 0, 0, 60),
+                    (232, 64, 64, 150),
                     (sq // 2, sq // 2),
                     sq // 2 - 2,
                     4,
                 )
-                self.surface.blit(
+                self._virtual_surface.blit(
                     ring_surf,
                     (
-                        self._board_x + move_pos.col * sq,
-                        self._board_y + move_pos.row * sq,
+                        self._board_x + move_pos.col * sq + BOARD_BORDER_P, 
+                        self._board_y + move_pos.row * sq + BOARD_BORDER_P,
                     ),
                 )
             else:
                 # Normal move: small dot
                 dot_surf = pygame.Surface((sq, sq), pygame.SRCALPHA)
-                pygame.draw.circle(dot_surf, (0, 0, 0, 60), (sq // 2, sq // 2), sq // 6)
-                self.surface.blit(
+                pygame.draw.circle(dot_surf, (59, 179, 232, 125), (sq // 2, sq // 2), sq // 6)
+                self._virtual_surface.blit(
                     dot_surf,
                     (
-                        self._board_x + move_pos.col * sq,
-                        self._board_y + move_pos.row * sq,
+                        self._board_x + move_pos.col * sq + BOARD_BORDER_P,
+                        self._board_y + move_pos.row * sq + BOARD_BORDER_P,
                     ),
                 )
 
@@ -392,21 +449,27 @@ class GameScreen(BaseScreen):
         captured = game_state.captured_pieces
         advantage = captured.get_point_advantage()
 
-        # Black's captured pieces (pieces White captured) — shown above the board
+        # Draw collection tray
+        # White tray
+        self._virtual_surface.blit(self._pc_tray.convert_alpha(), (self._board_x - 200, self._board_y + 200))
+        # Black tray
+        self._virtual_surface.blit(self._pc_tray.convert_alpha(), (self._board_x + 5 + self._border_size, self._board_y + 200))
+
+        # Pieces White has captured from Black
         self._draw_captured_row(
             captured.white_captured,
             Color.BLACK,
-            self._board_x,
-            self._board_y - 30,
+            self._board_x - 150,
+            self._board_y + 135,
             advantage if advantage > 0 else 0,
         )
 
-        # White's captured pieces (pieces Black captured) — shown below the board
+        # Pieces Black has captured from White
         self._draw_captured_row(
             captured.black_captured,
             Color.WHITE,
-            self._board_x,
-            self._board_y + self._board_size + 8,
+            self._board_x + self._border_size + 50,
+            self._board_y + 135,
             -advantage if advantage < 0 else 0,
         )
 
@@ -427,38 +490,51 @@ class GameScreen(BaseScreen):
             pieces, key=lambda p: PIECE_SORT_ORDER.get(p.piece_type, 5)
         )
 
+        # get x and y of piece if more than 8 wrap around,
+
         # Render each captured piece as a letter
-        spacing = self._captured_font_size
-        cx = x
+        spacing = self._square_size - 5
+        n_pieces = 0
+        row = 0
         for piece in sorted_pieces:
-            letter = PIECE_LETTER.get(piece.piece_type, "?")
-            surf = self._captured_font.render(letter, True, COLOR_TEXT_DIM)
-            self.surface.blit(surf, (cx, y))
-            cx += spacing
+            if captured_color == Color.BLACK:
+                x_piece = self._board_x - 180 + (row * spacing - 10)
+                y_piece = self._board_y + 225 + (spacing * n_pieces)
+                piece_surf = pygame.transform.scale(PIECE_BLACK.get(piece.piece_type, "?").convert_alpha(), (self._square_size - 20, self._square_size - 20))
+            else:
+                x_piece = self._board_x + 20 + self._border_size + (row * spacing - 10)
+                y_piece = self._board_y + 225 + (spacing * n_pieces)
+                piece_surf = pygame.transform.scale(PIECE_WHITE.get(piece.piece_type, "?").convert_alpha(), (self._square_size - 20, self._square_size - 20))
+            self._virtual_surface.blit(piece_surf, (x_piece, y_piece))
+            n_pieces += 1
+            if n_pieces >= 7:
+                n_pieces = 0
+                row = 1
+                
 
         # Point advantage
         if advantage > 0:
             adv_text = f"+{advantage}"
-            adv_surf = self._advantage_font.render(adv_text, True, COLOR_TEXT_DIM)
-            self.surface.blit(adv_surf, (cx + 4, y + 2))
+            adv_surf = self._advantage_font.render(adv_text, True, (255,255,255) if captured_color == Color.BLACK else (0,0,0))
+            self._virtual_surface.blit(adv_surf, (x,y))
 
     def _draw_move_history(self) -> None:
         """Draw the move history panel to the right of the board."""
-        px = self._panel_x
+        px = self._panel_x + BOARD_BORDER_P + 375
         py = self._panel_y
-        pw = self._panel_w
+        pw = self._panel_w + 150
         ph = self._panel_h
 
         # Panel background
         panel_rect = pygame.Rect(px, py, pw, ph)
-        pygame.draw.rect(self.surface, COLOR_PANEL, panel_rect, border_radius=8)
+        pygame.draw.rect(self._virtual_surface, COLOR_PANEL, panel_rect, border_radius=8)
         pygame.draw.rect(
-            self.surface, (80, 78, 75), panel_rect, width=1, border_radius=8
+            self._virtual_surface, (86, 49, 29), panel_rect, width=3, border_radius=8
         )
 
         # Header
         header_surf = self._history_font.render("Move History", True, COLOR_TEXT)
-        self.surface.blit(header_surf, (px + PANEL_PADDING, py + PANEL_PADDING))
+        self._virtual_surface.blit(header_surf, (px + PANEL_PADDING, py + PANEL_PADDING))
 
         # Build move pairs from move_history
         moves = self._game_controller.game_state.board.move_history
@@ -470,8 +546,8 @@ class GameScreen(BaseScreen):
             move_pairs.append((move_num, white_move, black_move))
 
         if not move_pairs:
-            empty_surf = self._history_font.render("No moves yet", True, COLOR_TEXT_DIM)
-            self.surface.blit(empty_surf, (px + PANEL_PADDING, py + PANEL_PADDING + 30))
+            empty_surf = self._history_font.render("No moves yet", True, COLOR_TEXT)
+            self._virtual_surface.blit(empty_surf, (px + PANEL_PADDING, py + PANEL_PADDING + 30))
             return
 
         # Clipping region for scrollable content
@@ -488,8 +564,8 @@ class GameScreen(BaseScreen):
             self._history_scroll = max_scroll
 
         # Render move rows
-        prev_clip = self.surface.get_clip()
-        self.surface.set_clip(clip_rect)
+        prev_clip = self._virtual_surface.get_clip()
+        self._virtual_surface.set_clip(clip_rect)
 
         col_num_x = px + PANEL_PADDING
         col_white_x = px + PANEL_PADDING + 36
@@ -506,27 +582,33 @@ class GameScreen(BaseScreen):
                 row_bg = pygame.Rect(px + 2, row_y, pw - 4, HISTORY_ROW_HEIGHT)
                 bg_surf = pygame.Surface((row_bg.width, row_bg.height), pygame.SRCALPHA)
                 bg_surf.fill((255, 255, 255, 10))
-                self.surface.blit(bg_surf, row_bg.topleft)
+                self._virtual_surface.blit(bg_surf, row_bg.topleft)
 
             # Move number
-            num_surf = self._history_font.render(f"{num}.", True, COLOR_TEXT_DIM)
-            self.surface.blit(num_surf, (col_num_x, row_y + 2))
+            num_surf = self._history_font.render(f"{num}.", True, COLOR_TEXT)
+            self._virtual_surface.blit(num_surf, (col_num_x, row_y + 2))
 
             # White's move
             white_surf = self._history_font.render(white, True, COLOR_TEXT)
-            self.surface.blit(white_surf, (col_white_x, row_y + 2))
+            self._virtual_surface.blit(white_surf, (col_white_x + 7, row_y + 2))
 
             # Black's move
             if black:
                 black_surf = self._history_font.render(black, True, COLOR_TEXT)
-                self.surface.blit(black_surf, (col_black_x, row_y + 2))
+                self._virtual_surface.blit(black_surf, (col_black_x + 7, row_y + 2))
 
-        self.surface.set_clip(prev_clip)
+        self._virtual_surface.set_clip(prev_clip)
 
     def _draw_status(self) -> None:
         """Draw turn indicator and game status text below the board."""
         game_state = self._game_controller.game_state
+        status_x = self._board_x + self._board_size // 2
+        status_y = self._board_y + self._board_size + 80 + BOARD_BORDER_P
+
         if game_state.is_game_over():
+            # Change status location
+            status_y = self._board_y + self._board_size + 70 + BOARD_BORDER_P
+            status_x = self._board_x + self._board_size // 2 - 100
             text = game_state.get_result_message()
         elif game_state.status == GameStatus.CHECK:
             turn_name = game_state.board.current_turn.name.capitalize()
@@ -534,10 +616,10 @@ class GameScreen(BaseScreen):
         else:
             turn_name = game_state.board.current_turn.name.capitalize()
             text = f"{turn_name}'s turn"
-
+        
         status_surf = self._status_font.render(text, True, COLOR_TEXT)
-        status_y = self._board_y + self._board_size + 35
         status_rect = status_surf.get_rect(
-            centerx=self._board_x + self._board_size // 2, top=status_y
+            centerx=(status_x) + BOARD_BORDER_P, top=status_y
         )
-        self.surface.blit(status_surf, status_rect)
+        
+        self._virtual_surface.blit(status_surf, status_rect)
