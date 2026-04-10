@@ -5,6 +5,7 @@ from src.entities.board import Board
 from src.entities.position import Position
 from src.entities.time_control import TimeControl
 from src.entities.captured_pieces import CapturedPieces
+from src.entities.clock import Clock
 
 
 class GameState:
@@ -14,7 +15,7 @@ class GameState:
         self.status: GameStatus = GameStatus.ACTIVE
         self.winner: Optional[Color] = None
         self.board: Board = board
-        self.clock = None  # Stub: Clock will be added in a future phase
+        self.clock = Clock()
         self.time_control: TimeControl = time_control
         self.captured_pieces: CapturedPieces = CapturedPieces()
         self.pending_promotion: Optional[Position] = None

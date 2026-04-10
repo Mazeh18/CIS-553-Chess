@@ -12,7 +12,7 @@ from src.entities.enums import Color, GameStatus, PieceType
 from src.controllers.move_validator import MoveValidator
 from src.controllers.notation_controller import NotationController
 from src.controllers.draw_detector import DrawDetector
-
+from src.controllers.clock_controller import ClockController
 
 class GameController:
     """Central orchestrator for the game. Owns GameState, dispatches actions."""
@@ -21,6 +21,7 @@ class GameController:
         self._move_validator = MoveValidator()
         self._notation_controller = NotationController()
         self._draw_detector = DrawDetector()
+        self._clock_controller = ClockController()
         self.game_state: Optional[GameState] = None
 
     def new_game(self, time_control: TimeControl) -> None:
@@ -28,6 +29,10 @@ class GameController:
         board = Board()
         board.initialize_standard()
         self.game_state = GameState(board, time_control)
+        # set clock for clock controller
+        self._clock_controller.clock = self.game_state.clock
+        self._clock_controller.initialize(time_control)
+        self._clock_controller.start_clock(Color.WHITE)
 
     def attempt_move(self, attempt: MoveAttempt) -> MoveResult:
         """Validate and execute a move. Returns MoveResult."""
@@ -91,6 +96,7 @@ class GameController:
             captured_piece=captured_piece,
             is_castling=is_castling,
             is_en_passant=is_en_passant,
+            time_after_move=self._clock_controller.clock.get_time(board.current_turn)
         )
         board.execute_move(move)
 
@@ -98,6 +104,7 @@ class GameController:
         promotion_row = 0 if piece.color == Color.WHITE else 7
         if piece.piece_type == PieceType.PAWN and attempt.end_pos.row == promotion_row:
             self.game_state.pending_promotion = attempt.end_pos
+            self._clock_controller.stop_clock()
             return MoveResult(
                 success=True,
                 is_promotion=True,
@@ -108,6 +115,7 @@ class GameController:
         move.notation = self._notation_controller.generate_notation(board, move)
 
         # Switch turn
+        self._clock_controller.switch_turn(board.current_turn)
         board.switch_turn()
 
         # Post-move status checks
@@ -160,6 +168,7 @@ class GameController:
         )
 
         # Switch turn
+        self._clock_controller.switch_turn(board.current_turn)
         board.switch_turn()
 
         # Clear pending promotion
@@ -193,14 +202,19 @@ class GameController:
         return self._move_validator.get_legal_moves(self.game_state.board, position)
 
     def update(self, delta: float) -> None:
-        """Called each frame. Clock updates will go here in the future."""
-        pass
+        """Update the timer for each frame."""
+        if self._clock_controller.update(delta):
+            self.game_state.status = GameStatus.TIMEOUT
+            board = self.game_state.board
+            self.game_state.winner = board.current_turn.opposite()
+            self._clock_controller.stop_clock()
 
     def resign(self, color: Color) -> None:
         """End the game by resignation."""
         if self.game_state:
             self.game_state.status = GameStatus.RESIGNED
             self.game_state.winner = color.opposite()
+            self._clock_controller.stop_clock()
 
     def undo_last_move(self) -> bool:
         """Revert the last move on the board, restore captured pieces, recalculate status.
@@ -230,6 +244,11 @@ class GameController:
 
         # Recalculate game status
         current_color = board.current_turn
+        if current_color == Color.WHITE:
+            self._clock_controller.clock.white_time = move.time_after_move
+        else:
+            self._clock_controller.clock.black_time = move.time_after_move
+
         if self._move_validator.is_in_check(board, current_color):
             self.game_state.status = GameStatus.CHECK
         else:
@@ -246,14 +265,17 @@ class GameController:
 
         if in_check:
             if self._move_validator.is_checkmate(board, color_to_move):
+                self._clock_controller.stop_clock()
                 return GameStatus.CHECKMATE
             return GameStatus.CHECK
 
         if self._move_validator.is_stalemate(board, color_to_move):
+            self._clock_controller.stop_clock()
             return GameStatus.STALEMATE
 
         draw_status = self._draw_detector.check_draw_conditions(board)
         if draw_status is not None:
+            self._clock_controller.stop_clock()
             return draw_status
 
         return GameStatus.ACTIVE

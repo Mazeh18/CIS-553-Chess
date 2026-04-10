@@ -133,6 +133,7 @@ class GameScreen(BaseScreen):
         self._history_font = pygame.font.Font(FONT_NAME, FONT_SIZE_SMALL - 5)
         self._captured_font = pygame.font.Font(None, self._captured_font_size)
         self._advantage_font = pygame.font.Font(FONT_NAME, int(FONT_SIZE_BODY * 0.75))
+        self._time_font = pygame.font.Font(FONT_NAME, int(FONT_SIZE_BODY * 0.75))
 
         # Main Menu button (bottom right)
         self._back_button = Button(
@@ -315,6 +316,17 @@ class GameScreen(BaseScreen):
 
         # Board background
         self._virtual_surface.blit(self._board_surface, (self._board_x, self._board_y))
+
+        # draw a clock countdown
+        text_black = self._time_font.render('Black', False, (0,0,0))
+        text_black_time = self._time_font.render(self._game_controller.game_state.clock.format_time(Color.BLACK), False, (0,0,0))
+        text_white = self._time_font.render('White', False, (255,255,255))
+        text_white_time = self._time_font.render(self._game_controller.game_state.clock.format_time(Color.WHITE), False, (255,255,255))
+
+        self._virtual_surface.blit(text_black, (self._board_x + self._border_size + 25, self._board_y + 25))
+        self._virtual_surface.blit(text_black_time, (self._board_x + self._border_size + 30, self._board_y + 70))
+        self._virtual_surface.blit(text_white, (self._board_x - 190, self._board_y + 25))
+        self._virtual_surface.blit(text_white_time, (self._board_x - 180, self._board_y + 70))
 
         # Highlight origin square and legal moves if dragging
         if self._drag_state.is_dragging:
