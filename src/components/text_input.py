@@ -4,7 +4,6 @@ import pygame
 
 from src.constants import (
     COLOR_TEXT,
-    COLOR_TEXT_DIM,
     COLOR_BUTTON_BORDER,
     COLOR_PANEL,
     FONT_NAME,
@@ -26,8 +25,8 @@ class TextInput:
         self.value = ""
         self.focused = False
         self._max_digits = max_digits
-        self._label_font = pygame.font.Font(FONT_NAME, FONT_SIZE_BODY)
-        self._value_font = pygame.font.Font(FONT_NAME, FONT_SIZE_BODY)
+        self._label_font = pygame.font.Font(FONT_NAME, FONT_SIZE_BODY - 20)
+        self._value_font = pygame.font.Font(FONT_NAME, FONT_SIZE_BODY - 20)
         self._cursor_visible = True
         self._cursor_timer = 0.0
 
@@ -52,7 +51,7 @@ class TextInput:
 
     def draw(self, surface: pygame.Surface) -> None:
         # Label above the input box
-        label_surf = self._label_font.render(self.label, True, COLOR_TEXT_DIM)
+        label_surf = self._label_font.render(self.label, True, COLOR_TEXT)
         label_rect = label_surf.get_rect(
             centerx=self.rect.centerx, bottom=self.rect.top - 4
         )
@@ -64,7 +63,7 @@ class TextInput:
 
         # Border
         border_color = COLOR_TEXT if self.focused else COLOR_BUTTON_BORDER
-        pygame.draw.rect(surface, border_color, self.rect, width=2, border_radius=6)
+        pygame.draw.rect(surface, border_color, self.rect, width=6, border_radius=6)
 
         # Value text
         display = self.value

@@ -4,7 +4,7 @@ import pygame
 
 from src.entities.enums import Color, PieceType
 from src.entities.position import Position
-from src.constants import COLOR_PANEL, COLOR_TEXT, COLOR_BUTTON_HOVER
+from src.constants import COLOR_PANEL
 
 # Promotion options in display order
 PROMOTION_CHOICES = [
@@ -20,7 +20,19 @@ PIECE_LETTER = {
     PieceType.BISHOP: "B",
     PieceType.KNIGHT: "N",
 }
+PIECE_WHITE = {
+    PieceType.QUEEN: pygame.image.load("assets/Pieces/QueenWhite.png"),
+    PieceType.ROOK: pygame.image.load("assets/Pieces/RookWhite.png"),
+    PieceType.BISHOP: pygame.image.load("assets/Pieces/BishopWhite.png"),
+    PieceType.KNIGHT: pygame.image.load("assets/Pieces/KnightWhite.png"),
+}
 
+PIECE_BLACK = {
+    PieceType.QUEEN: pygame.image.load("assets/Pieces/QueenBlack.png"),
+    PieceType.ROOK: pygame.image.load("assets/Pieces/RookBlack.png"),
+    PieceType.BISHOP: pygame.image.load("assets/Pieces/BishopBlack.png"),
+    PieceType.KNIGHT: pygame.image.load("assets/Pieces/KnightBlack.png"),
+}
 
 class PromotionPopup:
     """Modal overlay showing 4 promotion piece options at the promotion column."""
@@ -45,6 +57,7 @@ class PromotionPopup:
 
         # Build rects for the 4 options
         self._option_rects: list[tuple[pygame.Rect, PieceType]] = []
+        
         col_px = board_x + position.col * square_size
 
         if color == Color.WHITE:
@@ -68,13 +81,9 @@ class PromotionPopup:
 
         # Piece rendering colors
         if color == Color.WHITE:
-            self._circle_color = (255, 255, 255)
-            self._text_color = (30, 30, 30)
-            self._border_color = (180, 180, 180)
+            self._piece_options = PIECE_WHITE
         else:
-            self._circle_color = (30, 30, 30)
-            self._text_color = (220, 220, 220)
-            self._border_color = (80, 80, 80)
+            self._piece_options = PIECE_BLACK
 
         self._hover_index: Optional[int] = None
 
@@ -107,23 +116,16 @@ class PromotionPopup:
 
         # Semi-transparent overlay
         overlay = pygame.Surface(surface.get_size(), pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 120))
+        overlay.fill((0, 0, 0, 200))
         surface.blit(overlay, (0, 0))
 
         for i, (rect, piece_type) in enumerate(self._option_rects):
             # Background
-            bg_color = COLOR_BUTTON_HOVER if i == self._hover_index else COLOR_PANEL
+            bg_color = (147, 123, 95) if i == self._hover_index else COLOR_PANEL
             pygame.draw.rect(surface, bg_color, rect)
-            pygame.draw.rect(surface, (200, 200, 200), rect, 2)
-
-            # Piece circle
-            cx, cy = rect.centerx, rect.centery
-            pygame.draw.circle(surface, self._circle_color, (cx, cy), radius)
-            pygame.draw.circle(surface, self._border_color, (cx, cy), radius, 2)
+            pygame.draw.rect(surface, (98, 62, 46), rect, 2)
 
             # Piece letter
-            letter_surf = self._font.render(
-                PIECE_LETTER[piece_type], True, self._text_color
-            )
-            letter_rect = letter_surf.get_rect(center=(cx, cy))
-            surface.blit(letter_surf, letter_rect)
+            piece_surf = pygame.Surface((self._square_size,self._square_size), pygame.SRCALPHA)
+            piece_surf.blit(pygame.transform.scale(self._piece_options[piece_type].convert_alpha(), (self._square_size, self._square_size)), (0,0))
+            surface.blit(piece_surf, (rect.x,rect.y))
