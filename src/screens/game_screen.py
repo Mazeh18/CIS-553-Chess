@@ -505,21 +505,21 @@ class GameScreen(BaseScreen):
         # get x and y of piece if more than 8 wrap around,
 
         # Render each captured piece as a letter
-        spacing = self._square_size - 5
+        spacing = self._square_size - 15
         n_pieces = 0
         row = 0
         for piece in sorted_pieces:
             if captured_color == Color.BLACK:
-                x_piece = self._board_x - 180 + (row * spacing - 10)
+                x_piece = self._board_x - 170 + (row * spacing - 10)
                 y_piece = self._board_y + 225 + (spacing * n_pieces)
-                piece_surf = pygame.transform.scale(PIECE_BLACK.get(piece.piece_type, "?").convert_alpha(), (self._square_size - 20, self._square_size - 20))
+                piece_surf = pygame.transform.scale(PIECE_BLACK.get(piece.piece_type, "?").convert_alpha(), (self._square_size - 30, self._square_size - 30))
             else:
-                x_piece = self._board_x + 20 + self._border_size + (row * spacing - 10)
+                x_piece = self._board_x + 30 + self._border_size + (row * spacing - 10)
                 y_piece = self._board_y + 225 + (spacing * n_pieces)
-                piece_surf = pygame.transform.scale(PIECE_WHITE.get(piece.piece_type, "?").convert_alpha(), (self._square_size - 20, self._square_size - 20))
+                piece_surf = pygame.transform.scale(PIECE_WHITE.get(piece.piece_type, "?").convert_alpha(), (self._square_size - 30, self._square_size - 30))
             self._virtual_surface.blit(piece_surf, (x_piece, y_piece))
             n_pieces += 1
-            if n_pieces >= 7:
+            if n_pieces >= 8:
                 n_pieces = 0
                 row = 1
                 
