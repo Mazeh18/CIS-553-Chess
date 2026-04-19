@@ -26,7 +26,7 @@ class ClockController:
     def update(self, delta: float) -> bool:
         """Ticks timer down, returns True if timer is up"""
         self.clock.tick(delta)
-        if self.clock.is_time_expired(self.clock.active_color):
+        if self.clock.is_time_expired(self.clock.active_color) and self.clock.enabled:
             return True
         else:
             return False
